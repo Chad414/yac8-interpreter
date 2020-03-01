@@ -2,10 +2,10 @@
 // Created by chad on 3/1/20.
 //
 
-#include "../include/disassembler.h"
+#include "../include/Disassembler.h"
 using namespace std;
 
-void disassembler::hexDump(char *filePath) {
+void Disassembler::hexDump(char *filePath) {
     unsigned char buffer[1000];
     int addr = 0;
     int n;

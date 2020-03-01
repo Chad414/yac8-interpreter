@@ -9,7 +9,7 @@
 #include <fstream>
 #include <iomanip>
 
-class disassembler {
+class Disassembler {
 private:
 
 public:

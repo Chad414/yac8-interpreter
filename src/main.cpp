@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "../include/disassembler.h"
+#include "../include/Disassembler.h"
 
 using namespace std;
 
@@ -16,9 +16,10 @@ int main(int argc, char** argv) {
 
     std::cout << romPath << std::endl;
 
-    auto* dis = new disassembler();
-
+    auto* dis = new Disassembler();
     dis->hexDump(romPath);
 
+    // Free up Mem
+    delete dis;
     return 0;
 }
