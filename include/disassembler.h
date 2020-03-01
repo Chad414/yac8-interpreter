@@ -5,8 +5,15 @@
 #ifndef YAC8_INTERPRETER_DISASSEMBLER_H
 #define YAC8_INTERPRETER_DISASSEMBLER_H
 
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 
 class disassembler {
+private:
+
+public:
+    void hexDump(char filePath[]);
 
 };
 

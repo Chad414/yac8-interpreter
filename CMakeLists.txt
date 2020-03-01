@@ -3,4 +3,4 @@ project(yac8_interpreter)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(yac8_interpreter main.cpp disassembler.cpp disassembler.h)
+add_executable(yac8_interpreter src/main.cpp src/disassembler.cpp include/disassembler.h)
