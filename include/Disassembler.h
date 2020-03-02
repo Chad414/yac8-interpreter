@@ -5,17 +5,16 @@
 #ifndef YAC8_INTERPRETER_DISASSEMBLER_H
 #define YAC8_INTERPRETER_DISASSEMBLER_H
 
-#include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 
 class Disassembler {
-private:
-
-public:
-    void hexDump(char filePath[]);
-
+  private:
+  public:
+    void hexDump(char filePath[], std::ostream& out);
+    void disassemble(char filePath[]);
 };
 
 
-#endif //YAC8_INTERPRETER_DISASSEMBLER_H
+#endif  //YAC8_INTERPRETER_DISASSEMBLER_H
