@@ -260,7 +260,7 @@ void Disassembler::disassemble(char *filePath) {
 
             // Get next Byte
             ss >> addr;
-            cout << ", V" << int(addr & 0xF0)  // Vy
+            cout << ", V" << int((addr & 0xF0) >> 4)  // Vy
                  << ", " << int(addr & 0x0F);  // n
 
             counter++;
