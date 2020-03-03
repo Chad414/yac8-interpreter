@@ -1,4 +1,6 @@
 #pragma once
+#include <stack>
+#include <cstring>
 
 /**
  * MEMORY:
@@ -21,21 +23,24 @@
  */
 
 namespace Opcodes {
-    // void SYS(unsigned char addr);       // 0NNN Call Progam at Adress NNN NOTE: Ignored?
-    void CLS();                         // 00E0 Clears the Screen
-    void RET();                         // 00EE Return from Subroutine, return;
-    void JP(unsigned char addr);        // 1NNN Jump to address NNN
+
 }
 
 class CHIP8 {
   private:
     unsigned char memory[4096];      // 4K Bytes
     unsigned char V[16];             // 16 8-bit Registers (V0 - VF)
+    unsigned short PC = 0;           // Program counter
+    std::stack<unsigned short> stack;// Store return addresses when subroutines are called
     unsigned char dTimer;            // Delay Timer 60Hz (Count down from 60 to 0)
+    unsigned char sTimer;            // Sound timer 60Hz (Count down from 60 to 0)
     unsigned char key[16];           // 16 Key Hex Keyboard (Key ranges from 0-F)
     unsigned char display[64 * 32];  // Graphics are Monochrome 64x32 Pixels
 
-
-
   public:
+    // void SYS(unsigned char addr);       // 0NNN Call Progam at Adress NNN NOTE: Ignored, Not necessary for most Roms
+    void CLS();                         // 00E0 Clears the Screen
+    void RET();                         // 00EE Return from Subroutine, return;
+    void JP(unsigned char addr);        // 1NNN Jump to address NNN
+    void CALL(unsigned char addr);      // 2NNN Jump to address NNN
 };
