@@ -13,7 +13,7 @@ class Disassembler {
   private:
   public:
     void hexDump(char filePath[], std::ostream& out);
-    void disassemble(char filePath[]);
+    void disassemble(char filePath[], std::ostream& out);
 };
 
 
