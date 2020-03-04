@@ -188,11 +188,6 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
                 break;
             }
 
-
-            out << "LD V" << int(opcode & 0x0F);
-
-            // Obtain next Register Byte
-            out << ", V" << int(0xF & addr);  // Reg[Y] -> 0x5XY0
             break;
 
         case 0x90:  // Skip next if (reg[x] != reg[y])

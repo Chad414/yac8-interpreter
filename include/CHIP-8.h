@@ -28,7 +28,7 @@ class CHIP8 {
   private:
     unsigned char memory[4096];        // 4K Bytes (0x000 - 0xFFF)
     unsigned char V[16];               // 16 8-bit Registers (V0 - VF)
-    unsigned short PC = 0;             // Program counter
+    unsigned short PC = 0x200;         // Program counter
     std::stack<unsigned short> stack;  // Store return addresses when subroutines are called
     unsigned char dTimer;              // Delay Timer 60Hz (Count down from 60 to 0)
     unsigned char sTimer;              // Sound timer 60Hz (Count down from 60 to 0)
@@ -40,8 +40,15 @@ class CHIP8 {
     void run();                   // Runs Interpreter
     const char* memDump();        // Returns a Memory Dump
 
-    void CLS();                     // 00E0 Clears the Screen
-    void RET();                     // 00EE Return from Subroutine, return;
-    void JP(unsigned char addr);    // 1NNN Jump to address NNN
-    void CALL(unsigned char addr);  // 2NNN Jump to address NNN
+    void CLS();                                          // 00E0 Clears the Screen
+    void RET();                                          // 00EE Return from Subroutine, return;
+    void JP(unsigned short addr);                        // 1NNN Jump to address NNN
+    void CALL(unsigned short addr);                      // 2NNN Jump to address NNN
+    void SE(unsigned char byte1, unsigned char byte2);   // 3XKK, 5XY0 Skip next instruction if Vx = kk
+    void SNE(unsigned char byte1, unsigned char byte2);  // 4XKK Skip next instruction if Vx != kk
+    void LD(unsigned char *reg, unsigned char byte);     // 6XKK, 8XY0 Load value kk into Vx
+    void ADD(unsigned char *reg, unsigned char byte);    // 7XKK Add value kk to Vx
+    void OR(unsigned char *reg, unsigned char byte);     // 8XY1 Set Vx = Vx or Vy
+    void AND(unsigned char *reg, unsigned char byte);    // 8XY2 Set Vx = Vx and Vy
+    void XOR(unsigned char *reg, unsigned char byte);    // 8XY3 Set Vx = Vx xor Vy
 };

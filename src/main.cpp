@@ -48,14 +48,14 @@ int main(int argc, char** argv) {
     std::cout << romPath << std::endl;
 
     // Disassemble Option
-    auto* dis = new Disassembler();
+    Disassembler dasm;
     if (isDisassemble) {
         if (asmOutput == NULL)
-            dis->disassemble(romPath, cout);  // Output to Console
+            dasm.disassemble(romPath, cout);  // Output to Console
         else {                                // Output to File
             cout << "Saving ASM to '" << asmOutput << "'\n";
             ofstream file(asmOutput);
-            dis->disassemble(romPath, file);
+            dasm.disassemble(romPath, file);
             file.close();
         }
     }
@@ -71,9 +71,7 @@ int main(int argc, char** argv) {
     // DEBUG: Hex Dump for Visual
     // Hex Dump
     cout << "\n\n\nHEX DUMP" << endl;
-    dis->hexDump(romPath, cout);
+    dasm.hexDump(romPath, cout);
 
-    // Free up Mem
-    delete dis;
     return 0;
 }

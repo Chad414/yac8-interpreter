@@ -75,8 +75,10 @@ void CHIP8::run() {
             // NNN = Address
             if ((opcode & 0xFFF) == 0x0E0) {  // Clear Screen (CLS)
                 std::cout << "CLS";
+                CLS();
             } else if ((opcode & 0xFFF) == 0x0EE) {  // Return from Subroutine (RET)
                 std::cout << "RET";
+                RET();
             } else { // Output Data as in on Line
                 std::cout << std::setw(4) << opcode;
                 break;
@@ -86,11 +88,13 @@ void CHIP8::run() {
         case 0x10:  // Jump to Address (JP addr)
             // NNN = Address
             std::cout << "JP " << (opcode & 0xFFF);
+            JP(opcode & 0xFFF);
             break;
 
         case 0x20:  // Calls Subroutine (CALL addr)
             // NNN = Address
             std::cout << "CALL " << (opcode & 0xFFF);
+            CALL(opcode & 0xFFF);
             break;
 
         case 0x30:  // Skip next Instruction if(reg[x] == NN) (SE Vx, byte)
@@ -98,6 +102,8 @@ void CHIP8::run() {
 
             // Obtain Constant Byte
             std::cout << ", " << (opcode & 0xFF);
+
+            SE(V[(opcode & 0xF00) >> 8], opcode & 0xFF);
             break;
 
         case 0x40:  // Skip next if (reg[x] != NN) (SNE Vx, byte)
@@ -105,6 +111,8 @@ void CHIP8::run() {
 
             // Obtain Constant Byte
             std::cout << ", " << (opcode & 0xFF);
+
+            SNE(V[(opcode & 0xF00) >> 8], opcode & 0xFF);
             break;
 
         case 0x50:  // Skip next if (reg[x] == reg[y]) (SE Vx, Vy)
@@ -112,6 +120,8 @@ void CHIP8::run() {
 
             // Obtain next Register Byte
             std::cout << ", V" << (opcode & 0xF0);  // Reg[Y] -> 0x5XY0
+
+            SE(V[(opcode & 0xF00) >> 8], V[(opcode & 0xF0) >> 4]);
             break;
 
         case 0x60:  // Set reg[x] = NN (LD Vx, byte)
@@ -119,6 +129,8 @@ void CHIP8::run() {
 
             // Obtain Constant
             std::cout << ", " << (opcode & 0xFF);
+
+            LD(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF));
             break;
 
         case 0x70:  // Adds reg[x] += NN (ADD Vx, byte)
@@ -126,6 +138,8 @@ void CHIP8::run() {
 
             // Obtain Constant
             std::cout << ", " << (opcode & 0xFF);
+
+            ADD(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF));
             break;
 
         case 0x80:  // Register on Register Operations
@@ -134,18 +148,26 @@ void CHIP8::run() {
             case 0x0:               // Set reg[x] = reg[y]
                 std::cout << "LD V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
+
+                LD(&V[(opcode & 0xF00) >> 8], (opcode & 0xF0));
                 break;
             case 0x1:  // Set reg[x] |= reg[y]
                 std::cout << "OR V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
+
+                OR(&V[(opcode & 0xF00) >> 8], (opcode & 0xF0));
                 break;
             case 0x2:  // Set reg[x] &= reg[y]
                 std::cout << "AND V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
+
+                AND(&V[(opcode & 0xF00) >> 8], (opcode & 0xF0));
                 break;
             case 0x3:  // Set reg[x] ^= reg[y]
                 std::cout << "XOR V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
+
+                XOR(&V[(opcode & 0xF00) >> 8], (opcode & 0xF0));
                 break;
             case 0x4:  // Set reg[x] += reg[y]
                 std::cout << "ADD V" << ((opcode & 0xF00) >> 8);
@@ -174,11 +196,6 @@ void CHIP8::run() {
                 break;
             }
 
-
-            std::cout << "LD V" << ((opcode & 0xF00) >> 8);
-
-            // Obtain next Register Byte
-            std::cout << ", V" << (opcode & 0xF0);  // Reg[Y] -> 0x5XY0
             break;
 
         case 0x90:  // Skip next if (reg[x] != reg[y])
@@ -290,7 +307,7 @@ void CHIP8::run() {
 
         std::cout << '\n';
 
-        // if (PC >= 0x210) break;
+        if (PC >= 0x282) break;
         // Go to next Line
         PC += 0x2;
     }
@@ -299,19 +316,51 @@ void CHIP8::run() {
 
 void CHIP8::CLS() {
     memset(display, 0x00, 64 * 32);
-    /*for (unsigned char & i : display) {
-        i = 0;
-    }*/
 }
 
 void CHIP8::RET() {
+    PC = stack.top();
+    stack.pop();
 }
 
-void CHIP8::JP(unsigned char addr) {
+void CHIP8::JP(unsigned short addr) {
     PC = addr;  // Set PC to NNN
 }
 
-void CHIP8::CALL(unsigned char addr) {
+void CHIP8::CALL(unsigned short addr) {
     stack.push(PC);  // Push current PC to stack
     PC = addr;       // Set PC to NNN
 }
+
+void CHIP8::SE(unsigned char byte1, unsigned char byte2) {
+    if (byte1 == byte2) { // If Vx == kk or Vy, skip next instruction
+        PC += 0x2;
+    }
+}
+
+void CHIP8::SNE(unsigned char byte1, unsigned char byte2) {
+    if (byte1 != byte2) { // If Vx != kk or Vy, skip next instruction
+        PC += 0x2;
+    }
+}
+
+void CHIP8::LD(unsigned char *reg, unsigned char byte) {
+    *reg = byte;
+}
+
+void CHIP8::ADD(unsigned char *reg, unsigned char byte) {
+    *reg += byte;
+}
+
+void CHIP8::OR(unsigned char *reg, unsigned char byte) {
+    *reg |= byte;
+}
+
+void CHIP8::AND(unsigned char *reg, unsigned char byte) {
+    *reg &= byte;
+}
+
+void CHIP8::XOR(unsigned char *reg, unsigned char byte) {
+    *reg ^= byte;
+}
+
