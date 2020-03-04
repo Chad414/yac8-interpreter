@@ -8,7 +8,8 @@ using namespace std;
 
 int main(int argc, char** argv) {
     // Argument Variables
-    char *romPath, *asmOutput;
+    char* romPath = NULL;
+    char* asmOutput = NULL;
     bool isDisassemble = false;
 
     // Check Arguments
