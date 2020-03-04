@@ -2,6 +2,8 @@
 #include <stack>
 #include <cstring>
 
+#define CHIP8_DEBUG 1
+
 /**
  * MEMORY:
  *  - 4KB Total Memory
@@ -22,10 +24,6 @@
  *      - Keys { 8,4,6,2 } are Directional Inputs
  */
 
-namespace Opcodes {
-
-}
-
 class CHIP8 {
   private:
     unsigned char memory[4096];      // 4K Bytes
@@ -38,7 +36,9 @@ class CHIP8 {
     unsigned char display[64 * 32];  // Graphics are Monochrome 64x32 Pixels
 
   public:
-    // void SYS(unsigned char addr);       // 0NNN Call Progam at Adress NNN NOTE: Ignored, Not necessary for most Roms
+    void LOAD(char* romFile);        // Loads ROM Data into RAM
+    const char* memDump();
+
     void CLS();                         // 00E0 Clears the Screen
     void RET();                         // 00EE Return from Subroutine, return;
     void JP(unsigned char addr);        // 1NNN Jump to address NNN
