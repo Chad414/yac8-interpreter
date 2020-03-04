@@ -62,7 +62,9 @@ int main(int argc, char** argv) {
 
     // CHIP-8 Run NOTE: In Progress
     CHIP8 cpu;
-    cpu.LOAD(romPath);
+    cpu.loadROM(romPath);
+    cpu.run();
+    exit(0);
 
 
     // DEBUG: Hex Dump for Visual

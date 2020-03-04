@@ -1,12 +1,12 @@
 #pragma once
-#include <stack>
 #include <cstring>
+#include <stack>
 
-#define CHIP8_DEBUG 1
+#define CHIP8_DEBUG 0
 
 /**
  * MEMORY:
- *  - 4KB Total Memory
+ *  - 4KB Total Memory (0x000 - 0xFFF)
  *      - 512  Bytes (0x000 - 0x1FF) = CHIP-8 Interpreter (ROM)
  *          - Commonly Stored outside of Memory so, can be used
  *              for Front Data Storage
@@ -26,21 +26,22 @@
 
 class CHIP8 {
   private:
-    unsigned char memory[4096];      // 4K Bytes
-    unsigned char V[16];             // 16 8-bit Registers (V0 - VF)
-    unsigned short PC = 0;           // Program counter
-    std::stack<unsigned short> stack;// Store return addresses when subroutines are called
-    unsigned char dTimer;            // Delay Timer 60Hz (Count down from 60 to 0)
-    unsigned char sTimer;            // Sound timer 60Hz (Count down from 60 to 0)
-    unsigned char key[16];           // 16 Key Hex Keyboard (Key ranges from 0-F)
-    unsigned char display[64 * 32];  // Graphics are Monochrome 64x32 Pixels
+    unsigned char memory[4096];        // 4K Bytes (0x000 - 0xFFF)
+    unsigned char V[16];               // 16 8-bit Registers (V0 - VF)
+    unsigned short PC = 0;             // Program counter
+    std::stack<unsigned short> stack;  // Store return addresses when subroutines are called
+    unsigned char dTimer;              // Delay Timer 60Hz (Count down from 60 to 0)
+    unsigned char sTimer;              // Sound timer 60Hz (Count down from 60 to 0)
+    unsigned char key[16];             // 16 Key Hex Keyboard (Key ranges from 0-F)
+    unsigned char display[64 * 32];    // Graphics are Monochrome 64x32 Pixels
 
   public:
-    void LOAD(char* romFile);        // Loads ROM Data into RAM
-    const char* memDump();
+    void loadROM(char* romFile);  // Loads ROM Data into RAM
+    void run();                   // Runs Interpreter
+    const char* memDump();        // Returns a Memory Dump
 
-    void CLS();                         // 00E0 Clears the Screen
-    void RET();                         // 00EE Return from Subroutine, return;
-    void JP(unsigned char addr);        // 1NNN Jump to address NNN
-    void CALL(unsigned char addr);      // 2NNN Jump to address NNN
+    void CLS();                     // 00E0 Clears the Screen
+    void RET();                     // 00EE Return from Subroutine, return;
+    void JP(unsigned char addr);    // 1NNN Jump to address NNN
+    void CALL(unsigned char addr);  // 2NNN Jump to address NNN
 };
