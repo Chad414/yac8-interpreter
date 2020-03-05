@@ -79,7 +79,7 @@ void CHIP8::run() {
             } else if ((opcode & 0xFFF) == 0x0EE) {  // Return from Subroutine (RET)
                 std::cout << "RET";
                 RET();
-            } else { // Output Data as in on Line
+            } else {  // Output Data as in on Line
                 std::cout << std::setw(4) << opcode;
                 break;
             }
@@ -361,36 +361,3 @@ void CHIP8::CALL(unsigned short addr) {
     stack.push(PC);  // Push current PC to stack
     PC = addr;       // Set PC to NNN
 }
-
-void CHIP8::SE(unsigned char byte1, unsigned char byte2) {
-    if (byte1 == byte2) { // If Vx == kk or Vy, skip next instruction
-        PC += 0x2;
-    }
-}
-
-void CHIP8::SNE(unsigned char byte1, unsigned char byte2) {
-    if (byte1 != byte2) { // If Vx != kk or Vy, skip next instruction
-        PC += 0x2;
-    }
-}
-
-void CHIP8::LD(unsigned char *reg, unsigned char byte) {
-    *reg = byte;
-}
-
-void CHIP8::ADD(unsigned char *reg, unsigned char byte) {
-    *reg += byte;
-}
-
-void CHIP8::OR(unsigned char *reg, unsigned char byte) {
-    *reg |= byte;
-}
-
-void CHIP8::AND(unsigned char *reg, unsigned char byte) {
-    *reg &= byte;
-}
-
-void CHIP8::XOR(unsigned char *reg, unsigned char byte) {
-    *reg ^= byte;
-}
-
