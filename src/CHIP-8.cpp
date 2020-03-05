@@ -20,7 +20,7 @@ void CHIP8::loadROM(char *romPath) {
     Disassembler dasm;
     dasm.hexDump(romPath, hexStream);
 
-    unsigned short h;
+    u_int16_t h;
     // Store ROM in RAM starting at 0x200
     for (int addr = 0x200; hexStream >> h; addr++) {
         this->memory[addr] = h;
@@ -66,7 +66,7 @@ void CHIP8::run() {
     while (PC < 0xFFF) { // Make sure PC stays within Memory
         // Memory[PC]    -> Left-Most Nibble
         // Memory[PC+1]  -> Right-Most Nibble
-        unsigned short opcode = (memory[PC] << 8) | memory[PC + 1];
+        u_int16_t opcode = (memory[PC] << 8) | memory[PC + 1];
         std::cout << "[" << std::hex << std::setw(2) << std::setfill('0') << std::uppercase
                   << PC << "] " << std::setw(2) << std::setfill('0')
                   << int(memory[PC]) << ' ' << std::setw(2) << std::setfill('0')
@@ -332,13 +332,13 @@ void CHIP8::RET() {
     stack.pop();
 }
 
-void CHIP8::JP(unsigned short addr) {
-    PC = addr; // Set PC to NNN
+void CHIP8::JP(u_int16_t addr) {
+    PC = addr;  // Set PC to NNN
 }
 
-void CHIP8::CALL(unsigned short addr) {
-    stack.push(PC); // Push current PC to stack
-    PC = addr;      // Set PC to NNN
+void CHIP8::CALL(u_int16_t addr) {
+    stack.push(PC);  // Push current PC to stack
+    PC = addr;       // Set PC to NNN
 }
 
 void CHIP8::SE(u_char byte1, u_char byte2) {
@@ -350,53 +350,52 @@ void CHIP8::SNE(u_char byte1, u_char byte2) {
     if (byte1 != byte2)
         PC += 0x2;
 }
-// void CHIP8::LD(unsigned short *regPtr, unsigned short addr) {}
-void CHIP8::LD(u_char *regPtr, u_char byte) {
+// void CHIP8::LD(u_int16_t *regPtr, u_int16_t addr) {}
+void CHIP8::LD(u_char* regPtr, u_char byte) {
     *regPtr = byte;
 }
 
-void CHIP8::ADD(u_char *regPtr, u_char byte, bool checkFlag) {
+void CHIP8::ADD(u_char* regPtr, u_char byte, bool checkFlag) {
     if (checkFlag)
         V[0xF] = *regPtr + byte > 0xFF ? 0x1 : 0x0;
     *regPtr = (*regPtr + byte) % 0xFF;
 }
-
-void CHIP8::OR(u_char *regPtr, u_char byte) {
+void CHIP8::OR(u_char* regPtr, u_char byte) {
     *regPtr |= byte;
 }
 
-void CHIP8::AND(u_char *regPtr, u_char byte) {
+void CHIP8::AND(u_char* regPtr, u_char byte) {
     *regPtr &= byte;
 }
 
-void CHIP8::XOR(u_char *regPtr, u_char byte) {
+void CHIP8::XOR(u_char* regPtr, u_char byte) {
     *regPtr ^= byte;
 }
 
-void CHIP8::SUB(u_char *regPtr, u_char byte) {
+void CHIP8::SUB(u_char* regPtr, u_char byte) {
     V[0xF] = (*regPtr > byte) ? 0x1 : 0x0;
     *regPtr -= byte;
 }
 
-void CHIP8::SHR(u_char *regPtr1, u_char *regPtr2) {
-    V[0xF] = (*regPtr1 & 0x1) ? 0x1 : 0x0; // Set Carry Flag if LSB is 1
+void CHIP8::SHR(u_char* regPtr1, u_char* regPtr2) {
+    V[0xF] = (*regPtr1 & 0x1) ? 0x1 : 0x0;  // Set Carry Flag if LSB is 1
     *regPtr1 >>= 1;
 }
 
-void CHIP8::SUBN(u_char *regPtr, u_char byte) {
+void CHIP8::SUBN(u_char* regPtr, u_char byte) {
     V[0xF] = (byte > *regPtr) ? 0x1 : 0x0;
     *regPtr = byte - *regPtr;
 }
 
-void CHIP8::SHL(u_char *regPtr1, u_char *regPtr2) {
-    V[0xF] = (*regPtr1 & 0x8000) ? 0x1 : 0x0; // Set Carry Flag if MSB is 1
+void CHIP8::SHL(u_char* regPtr1, u_char* regPtr2) {
+    V[0xF] = (*regPtr1 & 0x8000) ? 0x1 : 0x0;  // Set Carry Flag if MSB is 1
     *regPtr1 <<= 1;
 }
 
-void CHIP8::LD(unsigned short addr) {
+void CHIP8::LD(u_int16_t addr) {
     I = addr;
 }
 
-void CHIP8::RND(u_char *regPtr, u_char byte) {
+void CHIP8::RND(u_char* regPtr, u_char byte) {
     *regPtr = (rand() % 0xFF) & byte;
 }
