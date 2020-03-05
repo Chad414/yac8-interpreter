@@ -1,5 +1,5 @@
 {
-    "C_Cpp.clang_format_style": "{FixNamespaceComments: false, NamespaceIndentation: All, AccessModifierOffset: -2, BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 120, MaxEmptyLinesToKeep: 3, UseTab: Never, TabWidth: 4, AllowShortIfStatementsOnASingleLine: true, IndentCaseLabels: false, ColumnLimit: 0}",
+    // "C_Cpp.clang_format_style": "{FixNamespaceComments: false, NamespaceIndentation: All, AccessModifierOffset: -2, BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 120, MaxEmptyLinesToKeep: 3, UseTab: Never, TabWidth: 4, AllowShortIfStatementsOnASingleLine: true, IndentCaseLabels: false, ColumnLimit: 0}",
     "files.associations": {
         "*.py": "python",
         "fstream": "cpp",
