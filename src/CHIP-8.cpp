@@ -2,8 +2,10 @@
 // Created by chad on 3/3/20.
 //
 #include "../include/CHIP-8.h"
-#include <sstream>
-#include "../include/Disassembler.h"
+
+CHIP8::CHIP8() {
+    srand (time(NULL));
+}
 
 /**
  * Loads given ROM into Memory starting at
@@ -137,7 +139,7 @@ void CHIP8::run() {
             // Obtain Constant
             std::cout << ", " << (opcode & 0xFF);
 
-            ADD(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF));
+            ADD(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF), false);
             break;
 
         case 0x80:  // Register on Register Operations
@@ -170,23 +172,31 @@ void CHIP8::run() {
                 std::cout << "ADD V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
 
-
+                ADD(&V[(opcode & 0xF00) >> 8], V[(opcode & 0xFF)], true);
                 break;
             case 0x5:  // Set reg[x] -= reg[y]
                 std::cout << "SUB V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
+
+                SUB(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x6:  // Shift reg[x] >>= 1
                 std::cout << "SHR V" << ((opcode & 0xF00) >> 8);
+
+                SHR(&V[(opcode & 0xF00) >> 8], &V[opcode & 0xF0]);
                 break;
 
             case 0x7:  // Set reg[x] = reg[y] - reg[x]
                 std::cout << "SUBN V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
+
+                SUBN(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
 
             case 0xE:  // Shift regx[] <<= 1
                 std::cout << "SHL V" << ((opcode & 0xF00) >> 8);
+
+                SHL(&V[(opcode & 0xF00) >> 8], &V[opcode & 0xF0]);
                 break;
 
             default:
@@ -202,6 +212,8 @@ void CHIP8::run() {
 
             // Obtain next Register Byte
             std::cout << ", V" << (opcode & 0xF0);
+
+            SNE(V[(opcode & 0xF00) >> 8], V[opcode & 0xFF]);
             break;
 
         case 0xA0:  // Set Register I = addr
@@ -210,6 +222,7 @@ void CHIP8::run() {
             // Output Address
             std::cout << (opcode & 0xFFF);
 
+            LD(opcode & 0xFFF);
             break;
 
         case 0xB0:  // Jumps to location in addr + Reg[0]
@@ -218,6 +231,7 @@ void CHIP8::run() {
             // Output Address
             std::cout << (opcode & 0xFFF);
 
+            JP(opcode & 0xFFF + V[0x0]);
             break;
 
         case 0xC0:  // Sets reg[x] = byte
@@ -226,6 +240,7 @@ void CHIP8::run() {
             // Get Const Byte
             std::cout << ", " << (opcode & 0xFF);
 
+            RND(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF));
             break;
 
         case 0xD0:  // Draw n-byte sprite at mem (reg[x], reg[y])
@@ -312,38 +327,6 @@ void CHIP8::run() {
     }
 }
 
-
-void CHIP8::XOR(unsigned char* regPtr, unsigned char byte) {
-    *regPtr ^= byte;
-}
-
-void CHIP8::AND(unsigned char* regPtr, unsigned char byte) {
-    *regPtr &= byte;
-}
-
-void CHIP8::OR(unsigned char* regPtr, unsigned char byte) {
-    *regPtr |= byte;
-}
-
-void CHIP8::ADD(unsigned char* regPtr, unsigned char byte) {
-    *regPtr += byte;
-}
-
-void CHIP8::LD(unsigned char* regPtr, unsigned char byte) {
-    *regPtr = byte;
-}
-// void CHIP8::LD(unsigned short *regPtr, unsigned short addr) {}
-
-void CHIP8::SE(unsigned char byte1, unsigned char byte2) {
-    if (byte1 == byte2)
-        PC += 0x2;
-}
-
-void CHIP8::SNE(unsigned char byte1, unsigned char byte2) {
-    if (byte1 != byte2)
-        PC += 0x2;
-}
-
 void CHIP8::CLS() {
     memset(display, 0x00, 64 * 32);
 }
@@ -360,4 +343,64 @@ void CHIP8::JP(unsigned short addr) {
 void CHIP8::CALL(unsigned short addr) {
     stack.push(PC);  // Push current PC to stack
     PC = addr;       // Set PC to NNN
+}
+
+void CHIP8::SE(unsigned char byte1, unsigned char byte2) {
+    if (byte1 == byte2)
+        PC += 0x2;
+}
+
+void CHIP8::SNE(unsigned char byte1, unsigned char byte2) {
+    if (byte1 != byte2)
+        PC += 0x2;
+}
+// void CHIP8::LD(unsigned short *regPtr, unsigned short addr) {}
+void CHIP8::LD(unsigned char* regPtr, unsigned char byte) {
+    *regPtr = byte;
+}
+
+void CHIP8::ADD(unsigned char* regPtr, unsigned char byte, bool checkFlag) {
+    if (checkFlag)
+        V[0xF] = *regPtr + byte > 0xFF ? 0x1 : 0x0;
+    *regPtr = (*regPtr + byte) % 0xFF;
+}
+
+void CHIP8::OR(unsigned char* regPtr, unsigned char byte) {
+    *regPtr |= byte;
+}
+
+void CHIP8::AND(unsigned char* regPtr, unsigned char byte) {
+    *regPtr &= byte;
+}
+
+void CHIP8::XOR(unsigned char* regPtr, unsigned char byte) {
+    *regPtr ^= byte;
+}
+
+void CHIP8::SUB(unsigned char* regPtr, unsigned char byte) {
+    V[0xF] = *regPtr > byte ? 0x1 : 0x0;
+    *regPtr -= byte;
+}
+
+void CHIP8::SHR(unsigned char* regPtr1, unsigned char* regPtr2) {
+    V[0xF] = (*regPtr1 & 0x1) ? 0x1 : 0x0;  // Set Carry Flag if LSB is 1
+    *regPtr1 >>= 1;
+}
+
+void CHIP8::SUBN(unsigned char* regPtr, unsigned char byte) {
+    V[0xF] = (byte > *regPtr) ? 0x1 : 0x0;
+    *regPtr = byte - *regPtr;
+}
+
+void CHIP8::SHL(unsigned char* regPtr1, unsigned char* regPtr2) {
+    V[0xF] = (*regPtr1 & 0x8000) ? 0x1 : 0x0;  // Set Carry Flag if MSB is 1
+    *regPtr1 <<= 1;
+}
+
+void CHIP8::LD(unsigned short addr) {
+    I = addr;
+}
+
+void CHIP8::RND(unsigned char* regPtr, unsigned char byte) {
+    *regPtr = (rand() % 0xFF) & byte;
 }
