@@ -3,6 +3,9 @@
 //
 #include "../include/CHIP-8.h"
 
+/**
+ * CHIP8 Constructor
+ */
 CHIP8::CHIP8() {
     srand (time(NULL));
 }
@@ -139,6 +142,7 @@ void CHIP8::run() {
             // Obtain Constant
             std::cout << ", " << (opcode & 0xFF);
 
+            // Add and Wraparound without Carry Flag
             ADD(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF), false);
             break;
 
@@ -171,13 +175,11 @@ void CHIP8::run() {
             case 0x4:  // Set reg[x] += reg[y]
                 std::cout << "ADD V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
-
-                ADD(&V[(opcode & 0xF00) >> 8], V[(opcode & 0xFF)], true);
+                ADD(&V[(opcode & 0xF00) >> 8], V[opcode & 0xFF], true);
                 break;
             case 0x5:  // Set reg[x] -= reg[y]
                 std::cout << "SUB V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
-
                 SUB(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x6:  // Shift reg[x] >>= 1
@@ -189,13 +191,11 @@ void CHIP8::run() {
             case 0x7:  // Set reg[x] = reg[y] - reg[x]
                 std::cout << "SUBN V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
-
                 SUBN(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
 
             case 0xE:  // Shift regx[] <<= 1
                 std::cout << "SHL V" << ((opcode & 0xF00) >> 8);
-
                 SHL(&V[(opcode & 0xF00) >> 8], &V[opcode & 0xF0]);
                 break;
 
@@ -212,7 +212,6 @@ void CHIP8::run() {
 
             // Obtain next Register Byte
             std::cout << ", V" << (opcode & 0xF0);
-
             SNE(V[(opcode & 0xF00) >> 8], V[opcode & 0xFF]);
             break;
 
@@ -221,7 +220,6 @@ void CHIP8::run() {
 
             // Output Address
             std::cout << (opcode & 0xFFF);
-
             LD(opcode & 0xFFF);
             break;
 
@@ -230,8 +228,7 @@ void CHIP8::run() {
 
             // Output Address
             std::cout << (opcode & 0xFFF);
-
-            JP(opcode & 0xFFF + V[0x0]);
+            JP((opcode & 0xFFF) + V[0x0]);
             break;
 
         case 0xC0:  // Sets reg[x] = byte
@@ -239,7 +236,6 @@ void CHIP8::run() {
 
             // Get Const Byte
             std::cout << ", " << (opcode & 0xFF);
-
             RND(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF));
             break;
 
@@ -378,7 +374,7 @@ void CHIP8::XOR(unsigned char* regPtr, unsigned char byte) {
 }
 
 void CHIP8::SUB(unsigned char* regPtr, unsigned char byte) {
-    V[0xF] = *regPtr > byte ? 0x1 : 0x0;
+    V[0xF] = (*regPtr > byte) ? 0x1 : 0x0;
     *regPtr -= byte;
 }
 
