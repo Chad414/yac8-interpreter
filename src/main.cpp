@@ -1,20 +1,20 @@
 #include <iostream>
 #include <string>
 
-#include "../include/Disassembler.h"
 #include "../include/CHIP-8.h"
+#include "../include/Disassembler.h"
 
 using namespace std;
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     // Argument Variables
-    char* romPath = NULL;
-    char* asmOutput = NULL;
+    char *romPath = NULL;
+    char *asmOutput = NULL;
     bool isDisassemble = false;
 
     // Check Arguments
     for (int i = 0; i < argc; ++i) {
-        string arg = argv[i];  // For Comparison
+        string arg = argv[i]; // For Comparison
 
         // Check for Help Argument
         if (arg == "-h") {
@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
                  << "-d \t\t Disassemble Given Rom\n";
             exit(0);
         } else if (arg == "-d") {
-            isDisassemble = true;  // Disassemble and Output
+            isDisassemble = true; // Disassemble and Output
         }
 
         // Check for Path Options
@@ -51,8 +51,8 @@ int main(int argc, char** argv) {
     Disassembler dasm;
     if (isDisassemble) {
         if (asmOutput == NULL)
-            dasm.disassemble(romPath, cout);  // Output to Console
-        else {                                // Output to File
+            dasm.disassemble(romPath, cout); // Output to Console
+        else {                               // Output to File
             cout << "Saving ASM to '" << asmOutput << "'\n";
             ofstream file(asmOutput);
             dasm.disassemble(romPath, file);
