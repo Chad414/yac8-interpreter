@@ -71,7 +71,7 @@ void CHIP8::run() {
         std::cout << std::hex;
         // Switch Case to handle Instructions NOTE: In Progress
         switch (memory[PC] & 0xF0) {  // Based on the First Nibble
-        case 0x00:                // System Call (SYS addr)
+        case 0x00:                    // System Call (SYS addr)
             // NNN = Address
             if ((opcode & 0xFFF) == 0x0E0) {  // Clear Screen (CLS)
                 std::cout << "CLS";
@@ -119,8 +119,7 @@ void CHIP8::run() {
             std::cout << "SE V" << ((opcode & 0xF00) >> 8);
 
             // Obtain next Register Byte
-            std::cout << ", V" << (opcode & 0xF0);  // Reg[Y] -> 0x5XY0
-
+            std::cout << ", V" << ((opcode & 0xF0) >> 4);  // Reg[Y] -> 0x5XY0
             SE(V[(opcode & 0xF00) >> 8], V[(opcode & 0xF0) >> 4]);
             break;
 
@@ -129,7 +128,6 @@ void CHIP8::run() {
 
             // Obtain Constant
             std::cout << ", " << (opcode & 0xFF);
-
             LD(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF));
             break;
 
@@ -145,33 +143,34 @@ void CHIP8::run() {
         case 0x80:  // Register on Register Operations
             // Get Operation Type
             switch (opcode & 0xF) {  // Operation Type
-            case 0x0:               // Set reg[x] = reg[y]
+            case 0x0:                // Set reg[x] = reg[y]
                 std::cout << "LD V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
-
-                LD(&V[(opcode & 0xF00) >> 8], (opcode & 0xF0));
+                LD(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x1:  // Set reg[x] |= reg[y]
                 std::cout << "OR V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
 
-                OR(&V[(opcode & 0xF00) >> 8], (opcode & 0xF0));
+                OR(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x2:  // Set reg[x] &= reg[y]
                 std::cout << "AND V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
 
-                AND(&V[(opcode & 0xF00) >> 8], (opcode & 0xF0));
+                AND(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x3:  // Set reg[x] ^= reg[y]
                 std::cout << "XOR V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
 
-                XOR(&V[(opcode & 0xF00) >> 8], (opcode & 0xF0));
+                XOR(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x4:  // Set reg[x] += reg[y]
                 std::cout << "ADD V" << ((opcode & 0xF00) >> 8);
                 std::cout << ", V" << (opcode & 0xF0);
+
+
                 break;
             case 0x5:  // Set reg[x] -= reg[y]
                 std::cout << "SUB V" << ((opcode & 0xF00) >> 8);
@@ -234,7 +233,7 @@ void CHIP8::run() {
 
             // Get next Byte
             std::cout << ", V" << ((opcode & 0xF0) >> 4)  // Vy
-                 << ", " << (opcode & 0x0F);  // n
+                      << ", " << (opcode & 0x0F);         // n
 
             break;
 
@@ -285,7 +284,7 @@ void CHIP8::run() {
 
             case 0x65:  // Read reg[0] to reg[x] in mem starting at location I
                 std::cout << "LD V" << ((opcode & 0xF00) >> 8)
-                     << ", [I]";
+                          << ", [I]";
                 break;
 
             default:
@@ -313,6 +312,37 @@ void CHIP8::run() {
     }
 }
 
+
+void CHIP8::XOR(unsigned char* regPtr, unsigned char byte) {
+    *regPtr ^= byte;
+}
+
+void CHIP8::AND(unsigned char* regPtr, unsigned char byte) {
+    *regPtr &= byte;
+}
+
+void CHIP8::OR(unsigned char* regPtr, unsigned char byte) {
+    *regPtr |= byte;
+}
+
+void CHIP8::ADD(unsigned char* regPtr, unsigned char byte) {
+    *regPtr += byte;
+}
+
+void CHIP8::LD(unsigned char* regPtr, unsigned char byte) {
+    *regPtr = byte;
+}
+// void CHIP8::LD(unsigned short *regPtr, unsigned short addr) {}
+
+void CHIP8::SE(unsigned char byte1, unsigned char byte2) {
+    if (byte1 == byte2)
+        PC += 0x2;
+}
+
+void CHIP8::SNE(unsigned char byte1, unsigned char byte2) {
+    if (byte1 != byte2)
+        PC += 0x2;
+}
 
 void CHIP8::CLS() {
     memset(display, 0x00, 64 * 32);

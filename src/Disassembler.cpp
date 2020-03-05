@@ -60,11 +60,11 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
     ios_base::fmtflags prevFlags(cout.flags());  // To restore Cout Output Style
     out << hex << uppercase << setw(2) << setfill('0');
 
-    int PC_line = 0x200;    // ROM Begins at 0x200
-    int opcode;             // Instruction Index
-    int addr;               // Temp Hold Addr/Const
+    int PC_line = 0x200;  // ROM Begins at 0x200
+    int opcode;           // Instruction Index
+    int addr;             // Temp Hold Addr/Const
     while (ss >> opcode) {
-       out << setw(4) << setfill('0') << PC_line << '\t';
+        out << setw(4) << setfill('0') << PC_line << '\t';
 
         switch (opcode & 0xF0) {  // Based on the First Nibble
         case 0x00:                // System Call (SYS addr)
@@ -77,7 +77,7 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
                 out << "CLS";
             } else if (addr == 0x0EE) {  // Return from Subroutine (RET)
                 out << "RET";
-            } else { // Output Data as in on Line
+            } else {  // Output Data as in on Line
                 opcode = (opcode << 8) | addr;
                 out << setw(4) << opcode;
                 break;
@@ -121,7 +121,7 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
 
             // Obtain next Register Byte
             ss >> addr;
-            out << ", V" << int(0xF0 & addr);  // Reg[Y] -> 0x5XY0
+            out << ", V" << int((0xF0 & addr) >> 4);  // Reg[Y] -> 0x5XY0
             break;
 
         case 0x60:  // Set reg[x] = NN (LD Vx, byte)
@@ -142,7 +142,7 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
 
         case 0x80:  // Register on Register Operations
             // Get Operation Type
-            ss >> addr;  // 8x[y0]
+            ss >> addr;             // 8x[y0]
             switch (addr & 0x0F) {  // Operation Type
             case 0x0:               // Set reg[x] = reg[y]
                 out << "LD V" << int(opcode & 0x0F);
@@ -187,7 +187,6 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
                 out << setw(4) << opcode;
                 break;
             }
-
             break;
 
         case 0x90:  // Skip next if (reg[x] != reg[y])
@@ -239,7 +238,7 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
             // Get next Byte
             ss >> addr;
             out << ", V" << int((addr & 0xF0) >> 4)  // Vy
-                 << ", " << int(addr & 0x0F);  // n
+                << ", " << int(addr & 0x0F);         // n
 
             break;
 
@@ -295,7 +294,7 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
 
             case 0x65:  // Read reg[0] to reg[x] in mem starting at location I
                 out << "LD V" << int(opcode & 0x0F)
-                     << ", [I]";
+                    << ", [I]";
                 break;
 
             default:
@@ -323,7 +322,7 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
         // Keep track of PC Line
         PC_line += 0x2;
         if (!(PC_line % 0x10)) out << '\n';
-        
+
         out << '\n';
     }
 
