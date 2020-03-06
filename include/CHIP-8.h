@@ -30,15 +30,15 @@
 
 class CHIP8 {
   private:
-    u_char memory[4096];               // 4K Bytes (0x000 - 0xFFF)
-    u_char V[16];                      // 16 8-bit Registers (V0 - VF)
-    unsigned short I;                  // Index Register (Memory Addresses)
-    unsigned short PC = 0x200;         // Program counter
-    std::stack<unsigned short> stack;  // Store return addresses when subroutines are called
-    u_char dTimer;                     // Delay Timer 60Hz (Count down from 60 to 0)
-    u_char sTimer;                     // Sound timer 60Hz (Count down from 60 to 0)
-    u_char key[16];                    // 16 Key Hex Keyboard (Key ranges from 0-F)
-    u_char display[64 * 32];           // Graphics are Monochrome 64x32 Pixels
+    u_char memory[4096];          // 4K Bytes (0x000 - 0xFFF)
+    u_char V[16];                 // 16 8-bit Registers (V0 - VF)
+    u_int16_t I;                  // Index Register (Memory Addresses)
+    u_int16_t PC = 0x200;         // Program counter
+    std::stack<u_int16_t> stack;  // Store return addresses when subroutines are called
+    u_char dTimer;                // Delay Timer 60Hz (Count down from 60 to 0)
+    u_char sTimer;                // Sound timer 60Hz (Count down from 60 to 0)
+    u_char key[16];               // 16 Key Hex Keyboard (Key ranges from 0-F)
+    u_char display[64 * 32];      // Graphics are Monochrome 64x32 Pixels
 
   public:
     CHIP8();
@@ -63,5 +63,9 @@ class CHIP8 {
     void SHL(u_char *, u_char *);          // 8XYE Shift Vx 1-bit Left | VF = 1 if MSB is 1
     void LD(u_int16_t);                    // ANNN, Set Index Register to nnn | I = addr
     void RND(u_char *, u_char);            // CXKK, Generate Random Byte | Vx = random byte & KK
-    void DRW(u_char *, u_char *, u_char);  // DXYN, Display n-byte sprite at location I at (Vx, Vy) | VF = Collision
+    void DRW(u_char *, u_char *, u_char);  // TODO: DXYN, Display n-byte sprite at location I at (Vx, Vy) | VF = Collision
+
+    void LD(u_char);               // FX33, Store BCD Representation of VX into I, I+1, I+2
+    void LD(u_int16_t *, u_char);  // FX55, Store Values V0 - VX into Memory Starting at Location I
+    void LD(u_char, u_int16_t *);  // FX65, Read Values V0 - VX from Memory Starting at Location I
 };
