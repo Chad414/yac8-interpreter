@@ -40,7 +40,7 @@ class CHIP8 {
     u_char display[64 * 32];      // Graphics are Monochrome 64x32 Pixels
 
   public:
-    u_char key[16];  // 16 Key Hex Keyboard (Key ranges from 0-F)
+    u_char key[16];  // 16 Key Hex Keyboard (Key ranges from 0-F) | Set as True(0x1) or False(0x0)
 
   public:
     CHIP8();
@@ -49,6 +49,7 @@ class CHIP8 {
     const char *memDump();           // Returns a Memory Dump
     void regDump(std::ostream &);    // Outputs Register Dump to Output Stream
     void stackDump(std::ostream &);  // Outputs Stack Dump to Output Stream
+    void keyDump(std::ostream &);    // Dumps 16 Key Keyboard Bytes
 
     void CLS();                            // 00E0 Clears the Screen
     void RET();                            // 00EE Return from Subroutine, return;

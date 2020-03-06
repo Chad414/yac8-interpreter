@@ -9,6 +9,10 @@
 CHIP8::CHIP8() {
     srand(time(NULL));  // Initialize Random Seed
     PC = 0x200;         // Set PC to ROM Starting Address in Memory
+
+    // Clear Keys
+    for(u_char& k : key)
+        k = false;
 }
 
 /**
@@ -26,7 +30,7 @@ void CHIP8::loadROM(char* romPath) {
     for (int addr = 0x200; hexStream >> h; addr++) {
         this->memory[addr] = h;
 
-#if CHIP8_DEBUG == 1  // DEBUG: RAM Storage Verbose
+#if CHIP8_DEBUG  // DEBUG: RAM Storage Verbose
         std::cout << std::hex << std::setw(2) << std::setfill('0')
                   << "RAM[0x" << std::uppercase << addr << "]:"
                   << std::setw(2) << std::setfill('0')
@@ -121,6 +125,21 @@ void CHIP8::stackDump(std::ostream& out) {
     for (int i = 0; bStack.size() > 0; i++) {
         stack.push(bStack.top());
         bStack.pop();
+    }
+}
+
+/**
+ * Outputs Keyboard Key Information into given stream
+ * 
+ * @param out - Output Stream for Key Dump
+ */
+void CHIP8::keyDump(std::ostream& out) {
+    out << "========== Hex Keyboard ==========\n";
+    for (u_char i = 0x0; i <= 0xF; i++) {
+        out << "Key[0x"
+            << std::hex << std::uppercase
+            << short(i) << "] = "
+            << short(key[i]) << '\n';
     }
 }
 
@@ -630,15 +649,16 @@ void CHIP8::RND(u_char* regPtr, u_char byte) {
 void CHIP8::DRW(u_char* regPtrX, u_char* regPtrY, u_char nBytes) {  // TODO: Implement SDL and OpenGL
 }
 
+
 /**
  * Opcode(s): EX9E
  * Skip next instruction if key with the value of Vx is pressed
  * 
  * @param keyVal - Key Value to listen
  */
-void CHIP8::SKP(u_char keyVal) {  //TODO: Implement SDL Key Down
-    // IF KEY_IS_DOWN(keyVal)
-    // PC += 0x2;
+void CHIP8::SKP(u_char keyVal) {
+    if(key[keyVal])
+        PC += 0x2;
 }
 
 /**
@@ -647,11 +667,10 @@ void CHIP8::SKP(u_char keyVal) {  //TODO: Implement SDL Key Down
  * 
  * @param keyVal - Key Value to listen
  */
-void CHIP8::SKNP(u_char keyVal) {  // TODO: Implement SDL Key Down
-    // IF (!KEY_IS_DOWN(keyVal))
-    // PC += 0x2;
+void CHIP8::SKNP(u_char keyVal) {
+    if(key[keyVal])
+        PC += 0x2;
 }
-
 
 
 /**

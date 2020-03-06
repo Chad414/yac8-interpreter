@@ -4,9 +4,9 @@
 
 #include "../include/Display.h"
 
-#include <utility>
 
 Display::Display(CHIP8* chip8) {
+    // Configure CPU Settings
     cpu = chip8;
 
     // Initialize SDL
@@ -31,19 +31,63 @@ Display::~Display() {
     SDL_Quit();
 }
 
+/**
+ * Main Display Run Loop
+ */
 void Display::run() {
     // Create window event and start loop
     SDL_Event windowEvent;
+    bool keyPos = true;     // False = KeyDown | True = KeyUp
+    SDL_Scancode* keyCode;  // Stored Key ScanCode
+
+    // RUN LOOP
     while (true) {
         if (SDL_PollEvent(&windowEvent)) {
+            switch (windowEvent.type) {
+            // Keyboard Event
+            case SDL_KEYDOWN:
+                // Key Pressed Down
+                keyPos = false;
+
+            case SDL_KEYUP:
+                keyCode = &windowEvent.key.keysym.scancode;  // Store Key ScanCode
+
+#if DISPLAY_KEY_DEBUG  // DEBUG: Output KeyPress
+                std::cout << "KeyCode[ "
+                          << (keyPos ? "UP" : "DOWN") << "] = "
+                          << *keyCode << '\n';
+#endif
+#if DISPLAY_DEBUG_MODE  // Debug Mode Outputs
+                // Debug Key
+                if (!keyPos && *keyCode == SDL_SCANCODE_F1) {
+                    std::cout << "=== DEBUG START ===\n";
+                    cpu->regDump(std::cout);
+                    cpu->keyDump(std::cout);
+                    cpu->stackDump(std::cout);
+                    std::cout << "=== DEBUG END ===\n\n";
+                }
+#endif
+
+                // Set Key Value
+                for (u_char i = 0x0; i <= 0xF; i++) {
+                    if (*keyCode == keyMap[i])
+                        cpu->key[i] = !keyPos;  // Set CPU's Key to Position Pressed
+                }
+
+                // Reset Key Pos
+                keyPos = true;
+                break;
+
+            default:
+                break;
+            }
+
 
             // Check if close button was clicked
             if (windowEvent.type == SDL_QUIT) break;
-
         }
 
         // Swap front and back buffer
         SDL_GL_SwapWindow(window);
     }
 }
-
