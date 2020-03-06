@@ -52,7 +52,7 @@ class CHIP8 {
     void CALL(u_int16_t);                  // 2NNN Jump to address NNN
     void SE(u_char, u_char);               // 3XKK, 5XY0 Skip next instruction if Vx = kk
     void SNE(u_char, u_char);              // 4XKK, 9XY0 Skip next instruction if Vx != kk
-    void LD(u_char *, u_char);             // 6XKK, 8XY0 Load value kk into Vx
+    void LD(u_char *, u_char);             // 6XKK, 8XY0, FX07/15/18 Load value kk into Vx
     void ADD(u_char *, u_char, bool);      // 7XKK, 8XY4 Add value kk to Vx
     void OR(u_char *, u_char);             // 8XY1 Set Vx = Vx or Vy
     void AND(u_char *, u_char);            // 8XY2 Set Vx = Vx and Vy
@@ -64,8 +64,10 @@ class CHIP8 {
     void LD(u_int16_t);                    // ANNN, Set Index Register to nnn | I = addr
     void RND(u_char *, u_char);            // CXKK, Generate Random Byte | Vx = random byte & KK
     void DRW(u_char *, u_char *, u_char);  // TODO: DXYN, Display n-byte sprite at location I at (Vx, Vy) | VF = Collision
-
-    void LD(u_char);               // FX33, Store BCD Representation of VX into I, I+1, I+2
-    void LD(u_int16_t *, u_char);  // FX55, Store Values V0 - VX into Memory Starting at Location I
-    void LD(u_char, u_int16_t *);  // FX65, Read Values V0 - VX from Memory Starting at Location I
+    void SKP(u_char);                      // TODO: EX9E, SKP, Skip next instruction if key with the value of Vx is pressed
+    void SKNP(u_char);                     // TODO: EXA1, SKNP, Skip next instruction if key with the value of Vx is not pressed
+    void ADD(u_int16_t *, u_char);         // FX1E, Add value I + Vx to I
+    void LD(u_char);                       // FX33, Store BCD Representation of VX into I, I+1, I+2
+    void LD(u_int16_t *, u_char);          // FX55, Store Values V0 - VX into Memory Starting at Location I
+    void LD(u_char, u_int16_t *);          // FX65, Read Values V0 - VX from Memory Starting at Location I
 };
