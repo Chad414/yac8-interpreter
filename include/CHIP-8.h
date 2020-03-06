@@ -37,10 +37,11 @@ class CHIP8 {
     std::stack<u_int16_t> stack;  // Store return addresses when subroutines are called
     u_char dTimer;                // Delay Timer 60Hz (Count down from 60 to 0)
     u_char sTimer;                // Sound timer 60Hz (Count down from 60 to 0)
-    u_char key[16];               // 16 Key Hex Keyboard (Key ranges from 0-F)
     u_char display[64 * 32];      // Graphics are Monochrome 64x32 Pixels
 
   public:
+    u_char key[16];               // 16 Key Hex Keyboard (Key ranges from 0-F)
+
     CHIP8();
     void loadROM(char *romFile);  // Loads ROM Data into RAM
     void run(bool);               // Runs Interpreter Sequentially or Infinitely
