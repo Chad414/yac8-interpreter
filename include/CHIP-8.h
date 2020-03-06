@@ -49,7 +49,7 @@ class CHIP8 {
     void CLS();                            // 00E0 Clears the Screen
     void RET();                            // 00EE Return from Subroutine, return;
     void JP(u_int16_t);                    // 1NNN, BNNN Jump to address NNN
-    void CALL(u_int16_t);                  // 2NNN Jump to address NNN
+    void CALL(u_int16_t);                  // 2NNN Call address NNN
     void SE(u_char, u_char);               // 3XKK, 5XY0 Skip next instruction if Vx = kk
     void SNE(u_char, u_char);              // 4XKK, 9XY0 Skip next instruction if Vx != kk
     void LD(u_char *, u_char);             // 6XKK, 8XY0, FX07/15/18 Load value kk into Vx
