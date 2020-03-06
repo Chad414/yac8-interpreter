@@ -57,6 +57,74 @@ const char* CHIP8::memDump() {
 }
 
 /**
+ * Outputs Register Information into given stream
+ * 
+ * @param out - Output Stream for Register Dump
+ */
+void CHIP8::regDump(std::ostream& out) {
+    out << "=================== General Registers ===================\n";
+    for (u_char i = 0x0; i <= 0xF; i++) {
+        out << "V" << short(i) << " = 0x"
+            << std::uppercase << std::hex << std::setw(2) << std::setfill('0')
+            << short(V[i]) << '\t';
+
+        if (!((i + 1) % 4)) out << '\n';
+    }
+
+    out << "\n======== Registers ========\t";
+    out << "========= Timers ========\n";
+    out << "I = 0x"
+        << std::uppercase << std::hex << std::setw(4) << std::setfill('0')
+        << short(I) << '\t';
+    out << "PC = 0x"
+        << std::uppercase << std::hex << std::setw(4) << std::setfill('0')
+        << short(PC) << '\t';
+
+
+    out << "dT = 0x"
+        << std::uppercase << std::hex << std::setw(2) << std::setfill('0')
+        << short(dTimer) << '\t';
+
+    out << "sT = 0x"
+        << std::uppercase << std::hex << std::setw(2) << std::setfill('0')
+        << short(sTimer) << '\t';
+
+    out << std::endl;
+}
+
+/**
+ * Outputs Stack Information into given stream
+ * 
+ * @param out - Output Stream for Stack Dump
+ */
+void CHIP8::stackDump(std::ostream& out) {
+    out << "======== Stack ========\n";
+
+    // Check if Emtpy
+    if (stack.empty()) {
+        out << "Stack = EMPTY\n";
+        return;
+    }
+
+    // Save Stack
+    std::stack<u_int16_t> bStack;
+
+    // Output Entire Stack while backing up to bStack
+    out << "Stack.size = " << stack.size() << '\n';
+    for (int i = 0; stack.size() > 0; i++) {
+        out << "Stack[" << i << "] = " << stack.top() << '\n';
+        bStack.push(stack.top());
+        stack.pop();
+    }
+
+    // Restore Stack
+    for (int i = 0; bStack.size() > 0; i++) {
+        stack.push(bStack.top());
+        bStack.pop();
+    }
+}
+
+/**
  * Begin running the interpreter
  * 
  * @param - isSequential - Sequential run or Infinite Loop (for threading)

@@ -40,12 +40,15 @@ class CHIP8 {
     u_char display[64 * 32];      // Graphics are Monochrome 64x32 Pixels
 
   public:
-    u_char key[16];               // 16 Key Hex Keyboard (Key ranges from 0-F)
+    u_char key[16];  // 16 Key Hex Keyboard (Key ranges from 0-F)
 
+  public:
     CHIP8();
-    void loadROM(char *romFile);  // Loads ROM Data into RAM
-    void run(bool);               // Runs Interpreter Sequentially or Infinitely
-    const char *memDump();        // Returns a Memory Dump
+    void loadROM(char *romFile);     // Loads ROM Data into RAM
+    void run(bool);                  // Runs Interpreter Sequentially or Infinitely
+    const char *memDump();           // Returns a Memory Dump
+    void regDump(std::ostream &);    // Outputs Register Dump to Output Stream
+    void stackDump(std::ostream &);  // Outputs Stack Dump to Output Stream
 
     void CLS();                            // 00E0 Clears the Screen
     void RET();                            // 00EE Return from Subroutine, return;
