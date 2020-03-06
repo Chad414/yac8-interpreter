@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
 
     // CHIP-8 Run NOTE: In Progress
     CHIP8 cpu;
-    Display display(cpu);
+    Display display(&cpu);
     cpu.loadROM(romPath);
     // cpu.run(true);
     display.run();

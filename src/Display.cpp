@@ -6,11 +6,9 @@
 
 #include <utility>
 
-Display::Display(CHIP8 chip8) {
-    cpu = std::move(chip8);
-}
+Display::Display(CHIP8* chip8) {
+    cpu = chip8;
 
-void Display::run() {
     // Initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -21,11 +19,19 @@ void Display::run() {
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
     // Create Window
-    SDL_Window* window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 512, 256, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 512, 256, SDL_WINDOW_OPENGL);
 
     // Create OpenGL Context for window
-    SDL_GLContext context = SDL_GL_CreateContext(window);
+    context = SDL_GL_CreateContext(window);
+}
 
+Display::~Display() {
+    // Destroy Context on exit
+    SDL_GL_DeleteContext(context);
+    SDL_Quit();
+}
+
+void Display::run() {
     // Create window event and start loop
     SDL_Event windowEvent;
     while (true) {
@@ -39,9 +45,5 @@ void Display::run() {
         // Swap front and back buffer
         SDL_GL_SwapWindow(window);
     }
-
-    // Destroy Context on exit
-    SDL_GL_DeleteContext(context);
-    SDL_Quit();
 }
 

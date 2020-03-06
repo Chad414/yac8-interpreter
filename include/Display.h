@@ -11,10 +11,13 @@
 
 class Display {
   private:
-    CHIP8 cpu;
+    CHIP8* cpu;
+    SDL_Window* window;
+    SDL_GLContext context;
 
   public:
-    Display(CHIP8);
+    Display(CHIP8*);
+    ~Display();
     void run();
 
 };
