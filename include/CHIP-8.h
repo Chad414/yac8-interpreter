@@ -52,7 +52,7 @@ class CHIP8 {
     void CALL(u_int16_t);                  // 2NNN Jump to address NNN
     void SE(u_char, u_char);               // 3XKK, 5XY0 Skip next instruction if Vx = kk
     void SNE(u_char, u_char);              // 4XKK, 9XY0 Skip next instruction if Vx != kk
-    void LD(u_char *, u_char);             // 6XKK, 8XY0 Load value kk into Vx
+    void LD(u_char *, u_char);             // 6XKK, 8XY0, FX07/15/18 Load value kk into Vx
     void ADD(u_char *, u_char, bool);      // 7XKK, 8XY4 Add value kk to Vx
     void OR(u_char *, u_char);             // 8XY1 Set Vx = Vx or Vy
     void AND(u_char *, u_char);            // 8XY2 Set Vx = Vx and Vy
@@ -63,5 +63,8 @@ class CHIP8 {
     void SHL(u_char *, u_char *);          // 8XYE Shift Vx 1-bit Left | VF = 1 if MSB is 1
     void LD(u_int16_t);                    // ANNN, Set Index Register to nnn | I = addr
     void RND(u_char *, u_char);            // CXKK, Generate Random Byte | Vx = random byte & KK
-    void DRW(u_char *, u_char *, u_char);  // DXYN, Display n-byte sprite at location I at (Vx, Vy) | VF = Collision
+    void DRW(u_char *, u_char *, u_char);  // TODO: DXYN, Display n-byte sprite at location I at (Vx, Vy) | VF = Collision
+    void SKP(u_char);                      // TODO: SKP, Skip next instruction if key with the value of Vx is pressed
+    void SKNP(u_char);                     // TODO: SKNP, Skip next instruction if key with the value of Vx is not pressed
+    void ADD(u_int16_t *, u_char);         // FX1E, Add value I + Vx to I
 };

@@ -263,26 +263,38 @@ void CHIP8::run() {
             switch (opcode & 0xFF) {
             case 0x07: // Delay Timer Value by DT
                 std::cout << "LD V" << ((opcode & 0xF00) >> 8) << ", DT";
+
+                LD(&V[(opcode & 0xF00) >> 8], dTimer);
                 break;
 
             case 0x0A: // Wait for Key Press and store Key in reg[x]
                 std::cout << "LD V" << ((opcode & 0xF00) >> 8) << ", K";
+
+                // TODO: When SDL is included
                 break;
 
             case 0x15: // Set Delay Timer to reg[x]
                 std::cout << "LD DT, V" << ((opcode & 0xF00) >> 8);
+
+                LD(&dTimer, V[(opcode & 0xF00) >> 8]);
                 break;
 
             case 0x18: // Set Sound Timer to reg[x]
                 std::cout << "LD ST, V" << ((opcode & 0xF00) >> 8);
+
+                LD(&sTimer, V[(opcode & 0xF00) >> 8]);
                 break;
 
             case 0x1E: // Set values of I to reg[x] I += reg[x]
                 std::cout << "ADD I, V" << ((opcode & 0xF00) >> 8);
+
+                ADD(&I, V[(opcode & 0xF00) >> 8]);
                 break;
 
             case 0x29: // Set I to the location of Sprite Digit reg[x]
                 std::cout << "LD F, V" << ((opcode & 0xF00) >> 8);
+
+                // TODO: After DRW is implemented
                 break;
 
             case 0x33: // Store BCD rep of reg[x] in mem locaion I, I+1, and I+2
@@ -398,4 +410,20 @@ void CHIP8::LD(u_int16_t addr) {
 
 void CHIP8::RND(u_char* regPtr, u_char byte) {
     *regPtr = (rand() % 0xFF) & byte;
+}
+
+void CHIP8::DRW(u_char *, u_char *, u_char) {
+
+}
+
+void CHIP8::SKP(u_char) {
+
+}
+
+void CHIP8::SKNP(u_char) {
+
+}
+
+void CHIP8::ADD(u_int16_t *regPtr, u_char byte) {
+    *regPtr += byte;
 }
