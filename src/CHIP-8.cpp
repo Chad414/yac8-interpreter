@@ -7,7 +7,8 @@
  * CHIP8 Constructor
  */
 CHIP8::CHIP8() {
-    srand(time(NULL));
+    srand(time(NULL));  // Initialize Random Seed
+    PC = 0x200;         // Set PC to ROM Starting Address in Memory
 }
 
 /**
@@ -57,13 +58,12 @@ const char* CHIP8::memDump() {
 
 /**
  * Begin running the interpreter
+ * 
+ * @param - isSequential - Sequential run or Infinite Loop (for threading)
  */
-void CHIP8::run() {
-    // Initialize Register Values
-    PC = 0x200;
-
+void CHIP8::run(bool isSequential) {
     // Loop through Memory
-    while (PC < 0xFFF) {  // Make sure PC stays within Memory
+    do {
         // Memory[PC]    -> Left-Most Nibble
         // Memory[PC+1]  -> Right-Most Nibble
         u_int16_t opcode = (memory[PC] << 8) | memory[PC + 1];
@@ -331,11 +331,9 @@ void CHIP8::run() {
         }
 
         std::cout << '\n';
-
-        if (PC >= 0x282) break;
         // Go to next Line
         PC += 0x2;
-    }
+    } while (!isSequential && PC < 0xFFF);  // Make sure PC stays within Memory
 }
 
 /**
@@ -489,7 +487,7 @@ void CHIP8::SHR(u_char* regPtr1, u_char* regPtr2) {
 
     // 70s and 80s Supported ROMs
     // *regPtr1 = *regPtr2 >> 1;
-    
+
     // 90s and 00s Supported ROMs
     *regPtr1 >>= 1;
 }
@@ -561,7 +559,8 @@ void CHIP8::RND(u_char* regPtr, u_char byte) {
  * @param regPtrY - Vy Register to set Sprite at y-position
  * @param nBytes - n-Bytes to read from address I
  */
-void CHIP8::DRW(u_char *regPtrX, u_char *regPtrY, u_char nBytes) {}
+void CHIP8::DRW(u_char* regPtrX, u_char* regPtrY, u_char nBytes) {  // TODO: Implement SDL and OpenGL
+}
 
 /**
  * Opcode(s): EX9E
@@ -569,7 +568,10 @@ void CHIP8::DRW(u_char *regPtrX, u_char *regPtrY, u_char nBytes) {}
  * 
  * @param keyVal - Key Value to listen
  */
-void CHIP8::SKP(u_char keyVal) {}
+void CHIP8::SKP(u_char keyVal) {  //TODO: Implement SDL Key Down
+    // IF KEY_IS_DOWN(keyVal)
+    // PC += 0x2;
+}
 
 /**
  * Opcode(s): EXA1
@@ -577,7 +579,10 @@ void CHIP8::SKP(u_char keyVal) {}
  * 
  * @param keyVal - Key Value to listen
  */
-void CHIP8::SKNP(u_char keyVal) {}
+void CHIP8::SKNP(u_char keyVal) {  // TODO: Implement SDL Key Down
+    // IF (!KEY_IS_DOWN(keyVal))
+    // PC += 0x2;
+}
 
 
 
@@ -588,7 +593,7 @@ void CHIP8::SKNP(u_char keyVal) {}
  * @param regPtr - I Register Used
  * @param byte - Byte to increment I by
  */
-void CHIP8::ADD(u_int16_t *regPtr, u_char byte) {
+void CHIP8::ADD(u_int16_t* regPtr, u_char byte) {
     *regPtr += byte;
 }
 

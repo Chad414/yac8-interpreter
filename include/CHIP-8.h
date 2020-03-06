@@ -43,7 +43,7 @@ class CHIP8 {
   public:
     CHIP8();
     void loadROM(char *romFile);  // Loads ROM Data into RAM
-    void run();                   // Runs Interpreter
+    void run(bool);               // Runs Interpreter Sequentially or Infinitely
     const char *memDump();        // Returns a Memory Dump
 
     void CLS();                            // 00E0 Clears the Screen

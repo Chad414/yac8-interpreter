@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
     // CHIP-8 Run NOTE: In Progress
     CHIP8 cpu;
     cpu.loadROM(romPath);
-    cpu.run();
+    // cpu.run(true);
 
     // Initialize SDL
     SDL_Init(SDL_INIT_VIDEO);
