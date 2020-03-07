@@ -57,7 +57,7 @@ void Display::run() {
                           << (keyPos ? "UP" : "DOWN") << "] = "
                           << *keyCode << '\n';
 #endif
-#if DISPLAY_DEBUG_MODE  // Debug Mode Outputs
+#if DISPLAY_DEBUG_MODE  // DEBUG: Debug Mode Outputs
                 // Debug Key
                 if (!keyPos && *keyCode == SDL_SCANCODE_F1) {
                     std::cout << "=== DEBUG START ===\n";
@@ -72,6 +72,15 @@ void Display::run() {
                 for (u_char i = 0x0; i <= 0xF; i++) {
                     if (*keyCode == keyMap[i])
                         cpu->key[i] = !keyPos;  // Set CPU's Key to Position Pressed
+                }
+
+                // DEBUG: Step by Step Run Instruction + Output to Console
+                if (!keyPos && *keyCode == SDL_SCANCODE_SPACE) {
+                    system("clear && date");
+                    cpu->run(true);
+                    cpu->displayDump(std::cout);
+                    cpu->regDump(std::cout);
+                    cpu->keyDump(std::cout);
                 }
 
                 // Reset Key Pos

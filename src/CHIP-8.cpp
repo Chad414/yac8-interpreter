@@ -11,7 +11,7 @@ CHIP8::CHIP8() {
     PC = 0x200;         // Set PC to ROM Starting Address in Memory
 
     // Clear Keys
-    for(u_char& k : key)
+    for (u_char& k : key)
         k = false;
 }
 
@@ -140,6 +140,15 @@ void CHIP8::keyDump(std::ostream& out) {
             << std::hex << std::uppercase
             << short(i) << "] = "
             << short(key[i]) << '\n';
+    }
+}
+
+void CHIP8::displayDump(std::ostream& out) {
+    for (u_char y = 0; y < 32; y++) {
+        for (u_char x = 0; x < 64; x++) {
+            out << (display[x][y] ? '*' : '-');
+        }
+        out << '\n';
     }
 }
 
@@ -333,6 +342,7 @@ void CHIP8::run(bool isSequential) {
             std::cout << ", V" << ((opcode & 0xF0) >> 4)  // Vy
                       << ", " << (opcode & 0x0F);         // n
 
+            DRW(&V[(opcode & 0xF00) >> 8], &V[(opcode & 0xF0) >> 4], (opcode & 0x0F));
             break;
 
         case 0xE0:  // Skip/No-Skip next Instruction if Key in reg[x] is pressed
@@ -634,8 +644,21 @@ void CHIP8::RND(u_char* regPtr, u_char byte) {
     *regPtr = (rand() % 0xFF) & byte;
 }
 
+/**
+ * Wraps index around a range
+ * 
+ * @param index - Index Position between [0-max_size]
+ * @param max_size - Max Range to limit index to
+ */
+u_char wrap(u_char index, u_char max_size) {
+    if (index < 0)
+        return index + max_size;
+    else if (index >= max_size)
+        return index % max_size;
+    else
+        return index;
+}
 
-// TODO: OpenGL and SDL Dependant
 /**
  * Opcode(s): DXYN
  * Display n-byte sprite at location I at (Vx, Vy) 
@@ -646,7 +669,25 @@ void CHIP8::RND(u_char* regPtr, u_char byte) {
  * @param regPtrY - Vy Register to set Sprite at y-position
  * @param nBytes - n-Bytes to read from address I
  */
-void CHIP8::DRW(u_char* regPtrX, u_char* regPtrY, u_char nBytes) {  // TODO: Implement SDL and OpenGL
+void CHIP8::DRW(u_char* regPtrX, u_char* regPtrY, u_char nBytes) {
+    // Assume No Overlap
+    V[0xF] = 0x0;
+
+    for (u_int16_t i = I; i < (I + nBytes); i++) {
+        // Get x and y Coordinates with Wapping Handled
+        u_char x = wrap(*regPtrX, 64);
+        u_char y = wrap(*regPtrY, 32);
+        
+        // Backup Previous Pixel
+        u_char prevPixel = display[x][y];
+
+        // Set Display at (x,y) to mem[i]
+        display[x][y] ^= memory[i];
+
+        // Check if Overlap
+        if ((prevPixel | memory[i]) != display[x][y])
+            V[0xF] = 0x1;
+    }
 }
 
 
@@ -657,7 +698,7 @@ void CHIP8::DRW(u_char* regPtrX, u_char* regPtrY, u_char nBytes) {  // TODO: Imp
  * @param keyVal - Key Value to listen
  */
 void CHIP8::SKP(u_char keyVal) {
-    if(key[keyVal])
+    if (key[keyVal])
         PC += 0x2;
 }
 
@@ -668,7 +709,7 @@ void CHIP8::SKP(u_char keyVal) {
  * @param keyVal - Key Value to listen
  */
 void CHIP8::SKNP(u_char keyVal) {
-    if(key[keyVal])
+    if (key[keyVal])
         PC += 0x2;
 }
 
