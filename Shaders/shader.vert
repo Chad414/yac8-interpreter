@@ -1,0 +1,23 @@
+#version 460 core
+/*
+ * Vertex Shader is responsible for the Location
+ *  of objects
+ */
+
+
+/* Incomming Data */
+layout (location = 0) in vec3 aPos;			// Postion of Variable from Location 0
+in vec4 aRGBA;								// RGBA Color of Vertex
+
+/* Outbound Data */
+out vec4 vertexColor;						// Vector of Color outputing to Fragment Shader
+
+/* Uniform Data */
+uniform mat4 transform;
+
+void main() {
+    gl_Position = transform * vec4(aPos, 1.0f);
+
+	// Outbound Data
+	vertexColor = aRGBA;
+}

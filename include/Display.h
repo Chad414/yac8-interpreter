@@ -8,9 +8,30 @@
 #define DISPLAY_KEY_DEBUG 0   // On Keypress Console Verbose
 #define DISPLAY_DEBUG_MODE 1  // Debug Mode Enable (F1 Key Outputs)
 
+#include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
+#include <vector>
 #include "../include/CHIP-8.h"
+#include "../include/BufferData.h"
+
+GLuint InitShader(std::string, GLenum);
+BufferData createBuffer(GLfloat*, size_t, GLuint*, size_t, GLuint);
+
+
+struct Shader {
+    bool status;  // Keep track of Shader Status (False = Not Ready | True = Ready)
+    GLuint ID;    // Store Compiled Shader Program
+
+    Shader() : ID(0), status(false){};             // No Shader Given
+    Shader(GLuint _id) : ID(_id), status(true){};  // Initialize Shader to precompiled Program
+
+    // Uses Current Program (If any)
+    void use();
+
+    // Compiles Given Shader Files (Vertex, Fragment)
+    void compile(const char*, const char*);
+};
 
 class Display {
   private:
@@ -36,6 +57,13 @@ class Display {
         SDL_SCANCODE_Q,       // 0xE
         SDL_SCANCODE_W        // 0xF
     };
+
+  private:                               // OpenGL Private Section
+    std::vector<BufferData> bufferData;  // Store References the Buffer Data
+    Shader shader;
+    void Preload();
+    void Draw();
+
 
   public:
     Display(CHIP8*);

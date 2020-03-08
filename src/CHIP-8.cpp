@@ -24,7 +24,12 @@ CHIP8::CHIP8(std::ostream* out) {
 void CHIP8::init() {
     srand(time(NULL));  // Initialize Random Seed
     PC = 0x200;         // Set PC to ROM Starting Address in Memory
+
+    // Zero Everything
     memset(V, 0x0, 0xF);
+    I = 0x0;
+    dTimer = 0x0;
+    sTimer = 0x0;
 
     // Clear Screen
     CLS();
@@ -469,6 +474,10 @@ void CHIP8::run(bool isSequential) {
         }
 
         if (out) *out << '\n';
+
+        // Decrement Delay Timer
+        if (dTimer > 0) dTimer--;
+
         // Go to next Line
         PC += 0x2;
     } while (!isSequential && PC < 0xFFF);  // Make sure PC stays within Memory
