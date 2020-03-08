@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 
     // Check Arguments
     for (int i = 0; i < argc; ++i) {
-        string arg = argv[i]; // For Comparison
+        string arg = argv[i];  // For Comparison
 
         // Check for Help Argument
         if (arg == "-h") {
@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
                  << "-d \t\t Disassemble Given Rom\n";
             exit(0);
         } else if (arg == "-d") {
-            isDisassemble = true; // Disassemble and Output
+            isDisassemble = true;  // Disassemble and Output
         }
 
         // Check for Path Options
@@ -52,17 +52,18 @@ int main(int argc, char **argv) {
     Disassembler dasm;
     if (isDisassemble) {
         if (asmOutput == NULL)
-            dasm.disassemble(romPath, cout); // Output to Console
-        else {                               // Output to File
+            dasm.disassemble(romPath, cout);  // Output to Console
+        else {                                // Output to File
             cout << "Saving ASM to '" << asmOutput << "'\n";
             ofstream file(asmOutput);
             dasm.disassemble(romPath, file);
             file.close();
         }
+        exit(0);
     }
 
     // CHIP-8 Run NOTE: In Progress
-    CHIP8 cpu;
+    CHIP8 cpu(&cout);
     Display display(&cpu);
     cpu.loadROM(romPath);
     // cpu.run(true);

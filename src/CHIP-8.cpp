@@ -4,11 +4,34 @@
 #include "../include/CHIP-8.h"
 
 /**
- * CHIP8 Constructor
+ * Constructs CHIP8 to Default
  */
 CHIP8::CHIP8() {
+    this->init();
+}
+
+/**
+ * CHIP8 Constructor with Ofstream Defined
+ */
+CHIP8::CHIP8(std::ostream* out) {
+    this->out = out;
+    this->init();
+}
+
+/**
+ * Initiates CHIP8's Data
+ */
+void CHIP8::init() {
     srand(time(NULL));  // Initialize Random Seed
     PC = 0x200;         // Set PC to ROM Starting Address in Memory
+    memset(V, 0x0, 0xF);
+
+    // Clear Screen
+    CLS();
+
+    // Load in Font Set
+    for (u_char i = 0; i < 0x50; i++)
+        memory[i] = fontSet[i];
 
     // Clear Keys
     for (u_char& k : key)
@@ -42,22 +65,21 @@ void CHIP8::loadROM(char* romPath) {
 }
 
 /**
- * Returns a Memory Dump of current
+ * Outputs Memory Dump of current
  *  memory state with 2Bytes per line
+ *  into given stream
+ * 
+ * @parma out - Output Stream
  */
-const char* CHIP8::memDump() {
-    std::stringstream dump;
-
+void CHIP8::memDump(std::ostream& out) {
     // Output 2 Bytes Per Line
     for (int i = 0x0; i < 0xFFF; i += 0x2) {
-        dump << "[0x" << std::setw(4) << std::setfill('0') << std::uppercase << std::hex
-             << i << "] " << std::hex << std::setw(2) << std::setfill('0')
-             << short(this->memory[i]) << ' ' << std::setw(2) << std::setfill('0')
-             << short(this->memory[i + 1])
-             << std::resetiosflags(std::ios::hex | std::ios::uppercase) << '\n';
+        out << "[0x" << std::setw(4) << std::setfill('0') << std::uppercase << std::hex
+            << i << "] " << std::hex << std::setw(2) << std::setfill('0')
+            << short(this->memory[i]) << ' ' << std::setw(2) << std::setfill('0')
+            << short(this->memory[i + 1])
+            << std::resetiosflags(std::ios::hex | std::ios::uppercase) << '\n';
     }
-
-    return dump.str().c_str();
 }
 
 /**
@@ -143,10 +165,15 @@ void CHIP8::keyDump(std::ostream& out) {
     }
 }
 
+/**
+ * Outputs the Display to a Stream
+ * 
+ * @param out - Stream to output Display to
+ */
 void CHIP8::displayDump(std::ostream& out) {
     for (u_char y = 0; y < 32; y++) {
         for (u_char x = 0; x < 64; x++) {
-            out << (display[x][y] ? '*' : '-');
+            out << (display[x][y] ? "▓" : "░");
         }
         out << '\n';
     }
@@ -163,80 +190,83 @@ void CHIP8::run(bool isSequential) {
         // Memory[PC]    -> Left-Most Nibble
         // Memory[PC+1]  -> Right-Most Nibble
         u_int16_t opcode = (memory[PC] << 8) | memory[PC + 1];
-        std::cout << "[" << std::hex << std::setw(2) << std::setfill('0') << std::uppercase
-                  << PC << "] " << std::setw(2) << std::setfill('0')
-                  << int(memory[PC]) << ' ' << std::setw(2) << std::setfill('0')
-                  << int(memory[PC + 0x1])
-                  << std::resetiosflags(std::ios::uppercase | std::ios::hex) << '\t';
+        if (out) *out << "[" << std::hex << std::setw(2) << std::setfill('0') << std::uppercase
+                      << PC << "] " << std::setw(2) << std::setfill('0')
+                      << int(memory[PC]) << ' ' << std::setw(2) << std::setfill('0')
+                      << int(memory[PC + 0x1])
+                      << std::resetiosflags(std::ios::uppercase | std::ios::hex) << '\t';
 
-        std::cout << std::hex;
-        // Switch Case to handle Instructions NOTE: In Progress
+        if (out) *out << std::hex;
         switch (memory[PC] & 0xF0) {  // Based on the First Nibble
         case 0x00:                    // System Call (SYS addr)
             // NNN = Address
             if ((opcode & 0xFFF) == 0x0E0) {  // Clear Screen (CLS)
-                std::cout << "CLS";
+                if (out) *out << "CLS";
                 CLS();
             } else if ((opcode & 0xFFF) == 0x0EE) {  // Return from Subroutine (RET)
-                std::cout << "RET";
+                if (out) *out << "RET";
                 RET();
             } else {  // Output Data as in on Line
-                std::cout << std::setw(4) << opcode;
+                if (out) *out << std::setw(4) << opcode;
                 break;
             }
             break;
 
         case 0x10:  // Jump to Address (JP addr)
             // NNN = Address
-            std::cout << "JP " << (opcode & 0xFFF);
+            if (out) *out << "JP " << (opcode & 0xFFF);
             JP(opcode & 0xFFF);
+
+            // Decrement PC, since it's incrementing at the End
+            //  which restores it Address Jumped to
+            PC -= 0x02;
             break;
 
         case 0x20:  // Calls Subroutine (CALL addr)
             // NNN = Address
-            std::cout << "CALL " << (opcode & 0xFFF);
+            if (out) *out << "CALL " << (opcode & 0xFFF);
             CALL(opcode & 0xFFF);
             break;
 
         case 0x30:  // Skip next Instruction if(reg[x] == NN) (SE Vx, byte)
-            std::cout << "SE V" << ((opcode & 0xF00) >> 8);
+            if (out) *out << "SE V" << ((opcode & 0xF00) >> 8);
 
             // Obtain Constant Byte
-            std::cout << ", " << (opcode & 0xFF);
+            if (out) *out << ", " << (opcode & 0xFF);
 
             SE(V[(opcode & 0xF00) >> 8], opcode & 0xFF);
             break;
 
         case 0x40:  // Skip next if (reg[x] != NN) (SNE Vx, byte)
-            std::cout << "SNE V" << ((opcode & 0xF00) >> 8);
+            if (out) *out << "SNE V" << ((opcode & 0xF00) >> 8);
 
             // Obtain Constant Byte
-            std::cout << ", " << (opcode & 0xFF);
+            if (out) *out << ", " << (opcode & 0xFF);
 
             SNE(V[(opcode & 0xF00) >> 8], opcode & 0xFF);
             break;
 
         case 0x50:  // Skip next if (reg[x] == reg[y]) (SE Vx, Vy)
-            std::cout << "SE V" << ((opcode & 0xF00) >> 8);
+            if (out) *out << "SE V" << ((opcode & 0xF00) >> 8);
 
             // Obtain next Register Byte
-            std::cout << ", V" << ((opcode & 0xF0) >> 4);  // Reg[Y] -> 0x5XY0
+            if (out) *out << ", V" << ((opcode & 0xF0) >> 4);  // Reg[Y] -> 0x5XY0
             SE(V[(opcode & 0xF00) >> 8], V[(opcode & 0xF0) >> 4]);
             break;
 
         case 0x60:  // Set reg[x] = NN (LD Vx, byte)
-            std::cout << "LD V" << ((opcode & 0xF00) >> 8);
+            if (out) *out << "LD V" << ((opcode & 0xF00) >> 8);
 
             // Obtain Constant
-            std::cout << ", " << (opcode & 0xFF);
+            if (out) *out << ", " << (opcode & 0xFF);
             LD(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF));
             break;
 
         case 0x70:  // Adds reg[x] += NN (ADD Vx, byte)
-            std::cout << "ADD V" << ((opcode & 0xF00) >> 8);
+            if (out) *out << "ADD V" << ((opcode & 0xF00) >> 8);
 
             // Obtain Constant
-            std::cout << ", " << (opcode & 0xFF);
+            if (out) *out << ", " << (opcode & 0xFF);
 
             // Add and Wraparound without Carry Flag
             ADD(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF), false);
@@ -246,101 +276,106 @@ void CHIP8::run(bool isSequential) {
             // Get Operation Type
             switch (opcode & 0xF) {  // Operation Type
             case 0x0:                // Set reg[x] = reg[y]
-                std::cout << "LD V" << ((opcode & 0xF00) >> 8);
-                std::cout << ", V" << (opcode & 0xF0);
+                if (out) *out << "LD V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << ", V" << (opcode & 0xF0);
                 LD(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x1:  // Set reg[x] |= reg[y]
-                std::cout << "OR V" << ((opcode & 0xF00) >> 8);
-                std::cout << ", V" << (opcode & 0xF0);
+                if (out) *out << "OR V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << ", V" << (opcode & 0xF0);
 
                 OR(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x2:  // Set reg[x] &= reg[y]
-                std::cout << "AND V" << ((opcode & 0xF00) >> 8);
-                std::cout << ", V" << (opcode & 0xF0);
+                if (out) *out << "AND V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << ", V" << (opcode & 0xF0);
 
                 AND(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x3:  // Set reg[x] ^= reg[y]
-                std::cout << "XOR V" << ((opcode & 0xF00) >> 8);
-                std::cout << ", V" << (opcode & 0xF0);
+                if (out) *out << "XOR V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << ", V" << (opcode & 0xF0);
 
                 XOR(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x4:  // Set reg[x] += reg[y]
-                std::cout << "ADD V" << ((opcode & 0xF00) >> 8);
-                std::cout << ", V" << (opcode & 0xF0);
+                if (out) *out << "ADD V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << ", V" << (opcode & 0xF0);
                 ADD(&V[(opcode & 0xF00) >> 8], V[opcode & 0xFF], true);
                 break;
             case 0x5:  // Set reg[x] -= reg[y]
-                std::cout << "SUB V" << ((opcode & 0xF00) >> 8);
-                std::cout << ", V" << (opcode & 0xF0);
+                if (out) *out << "SUB V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << ", V" << (opcode & 0xF0);
                 SUB(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
             case 0x6:  // Shift reg[x] >>= 1
-                std::cout << "SHR V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "SHR V" << ((opcode & 0xF00) >> 8);
 
                 SHR(&V[(opcode & 0xF00) >> 8], &V[opcode & 0xF0]);
                 break;
 
             case 0x7:  // Set reg[x] = reg[y] - reg[x]
-                std::cout << "SUBN V" << ((opcode & 0xF00) >> 8);
-                std::cout << ", V" << (opcode & 0xF0);
+                if (out) *out << "SUBN V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << ", V" << (opcode & 0xF0);
                 SUBN(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
                 break;
 
             case 0xE:  // Shift regx[] <<= 1
-                std::cout << "SHL V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "SHL V" << ((opcode & 0xF00) >> 8);
                 SHL(&V[(opcode & 0xF00) >> 8], &V[opcode & 0xF0]);
                 break;
 
             default:
                 // Output Data as in on Line
-                std::cout << std::setw(4) << opcode;
+                if (out) *out << std::setw(4) << opcode;
                 break;
             }
 
             break;
 
         case 0x90:  // Skip next if (reg[x] != reg[y])
-            std::cout << "SNE V" << ((opcode & 0xF00) >> 8);
+            if (out) *out << "SNE V" << ((opcode & 0xF00) >> 8);
 
             // Obtain next Register Byte
-            std::cout << ", V" << (opcode & 0xF0);
+            if (out) *out << ", V" << (opcode & 0xF0);
             SNE(V[(opcode & 0xF00) >> 8], V[opcode & 0xFF]);
             break;
 
         case 0xA0:  // Set Register I = addr
-            std::cout << "LD I, ";
+            if (out) *out << "LD I, ";
 
             // Output Address
-            std::cout << (opcode & 0xFFF);
+            if (out) *out << (opcode & 0xFFF);
             LD(u_int16_t(opcode & 0xFFF));
             break;
 
         case 0xB0:  // Jumps to location in addr + Reg[0]
-            std::cout << "JP V0, ";
+            if (out) *out << "JP V0, ";
 
             // Output Address
-            std::cout << (opcode & 0xFFF);
+            if (out) *out << (opcode & 0xFFF);
             JP((opcode & 0xFFF) + V[0x0]);
+
+            // Decrement PC, since it's incrementing at the End
+            //  which restores it Address Jumped to
+            PC -= 0x02;
+
             break;
 
         case 0xC0:  // Sets reg[x] = byte
-            std::cout << "RND V" << ((opcode & 0xF00) >> 8);
+            if (out) *out << "RND V" << ((opcode & 0xF00) >> 8);
 
             // Get Const Byte
-            std::cout << ", " << (opcode & 0xFF);
+            if (out) *out << ", " << (opcode & 0xFF);
             RND(&V[(opcode & 0xF00) >> 8], (opcode & 0xFF));
             break;
 
         case 0xD0:  // Draw n-byte sprite at mem (reg[x], reg[y])
-            std::cout << "DRW V" << ((opcode & 0xF00) >> 8);
+            if (out) *out << "DRW V" << ((opcode & 0xF00) >> 8);
 
             // Get next Byte
-            std::cout << ", V" << ((opcode & 0xF0) >> 4)  // Vy
-                      << ", " << (opcode & 0x0F);         // n
+            if (out) *out << ", V" << ((opcode & 0xF0) >> 4)  // Vy
+                          << ", " << (opcode & 0x0F);         // n
 
             DRW(&V[(opcode & 0xF00) >> 8], &V[(opcode & 0xF0) >> 4], (opcode & 0x0F));
             break;
@@ -348,9 +383,11 @@ void CHIP8::run(bool isSequential) {
         case 0xE0:  // Skip/No-Skip next Instruction if Key in reg[x] is pressed
             // Check (Skip/No-Skip)
             if ((opcode & 0xFF) == 0x9E) {  // Skip
-                std::cout << "SKP V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "SKP V" << ((opcode & 0xF00) >> 8);
+                SKP(V[((opcode & 0xF00) >> 8)]);
             } else {  // addr == 0xA1 (No Skip)
-                std::cout << "SKNP V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "SKNP V" << ((opcode & 0xF00) >> 8);
+                SKNP(V[((opcode & 0xF00) >> 8)]);
             }
 
             break;
@@ -359,75 +396,79 @@ void CHIP8::run(bool isSequential) {
             // Action Type
             switch (opcode & 0xFF) {
             case 0x07:  // Delay Timer Value by DT
-                std::cout << "LD V" << ((opcode & 0xF00) >> 8) << ", DT";
+                if (out) *out << "LD V" << ((opcode & 0xF00) >> 8) << ", DT";
 
                 LD(&V[(opcode & 0xF00) >> 8], dTimer);
                 break;
 
             case 0x0A:  // Wait for Key Press and store Key in reg[x]
-                std::cout << "LD V" << ((opcode & 0xF00) >> 8) << ", K";
+                if (out) *out << "LD V" << ((opcode & 0xF00) >> 8) << ", K";
 
-                // TODO: When SDL is included
+                // Decrement PC, since it'll increment at the end
+                //  kind of "halting" PC in the same spot
+                PC -= 0x2;
+                SKP(V[(opcode & 0xF00) >> 8]);  // Continue IF key is pressed (restoring the PC back)
                 break;
 
             case 0x15:  // Set Delay Timer to reg[x]
-                std::cout << "LD DT, V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "LD DT, V" << ((opcode & 0xF00) >> 8);
 
                 LD(&dTimer, V[(opcode & 0xF00) >> 8]);
                 break;
 
             case 0x18:  // Set Sound Timer to reg[x]
-                std::cout << "LD ST, V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "LD ST, V" << ((opcode & 0xF00) >> 8);
 
                 LD(&sTimer, V[(opcode & 0xF00) >> 8]);
                 break;
 
             case 0x1E:  // Set values of I to reg[x] I += reg[x]
-                std::cout << "ADD I, V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "ADD I, V" << ((opcode & 0xF00) >> 8);
 
                 ADD(&I, V[(opcode & 0xF00) >> 8]);
                 break;
 
             case 0x29:  // Set I to the location of Sprite Digit reg[x]
-                std::cout << "LD F, V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "LD F, V" << ((opcode & 0xF00) >> 8);
 
-                // TODO: After DRW is implemented
+                // Offset to the desired Hex Font Address
+                // Since the Hex Fonts start at address 0x00-0x50
+                //  and each Hex Font is 5Bytes, we offset by 0x5
+                //  with the desired font value
+                LD(u_int16_t(V[(opcode & 0xF00) >> 8] * 0x5));
                 break;
 
             case 0x33:  // Store BCD rep of reg[x] in mem locaion I, I+1, and I+2
-                std::cout << "LD B, V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "LD B, V" << ((opcode & 0xF00) >> 8);
                 LD(V[(opcode & 0xF00) >> 8]);
                 break;
 
             case 0x55:  // Store reg[0] to reg[x] in mem starting at location I
-                std::cout << "LD [I], V" << ((opcode & 0xF00) >> 8);
+                if (out) *out << "LD [I], V" << ((opcode & 0xF00) >> 8);
                 LD(&I, (opcode & 0xF00) >> 8);
                 break;
 
             case 0x65:  // Read reg[0] to reg[x] in mem starting at location I
-                std::cout << "LD V" << ((opcode & 0xF00) >> 8)
-                          << ", [I]";
+                if (out) *out << "LD V" << ((opcode & 0xF00) >> 8)
+                              << ", [I]";
                 LD(((opcode & 0xF00) >> 8), &I);
                 break;
 
             default:
                 // Output Data as in on Line
-                std::cout << std::setw(4) << opcode;
+                if (out) *out << std::setw(4) << opcode;
                 break;
             }
 
-
             break;
-
-
 
         default:
             // Output Data as in on Line
-            std::cout << std::setw(4) << opcode;
+            if (out) *out << std::setw(4) << opcode;
             break;
         }
 
-        std::cout << '\n';
+        if (out) *out << '\n';
         // Go to next Line
         PC += 0x2;
     } while (!isSequential && PC < 0xFFF);  // Make sure PC stays within Memory
@@ -673,20 +714,24 @@ void CHIP8::DRW(u_char* regPtrX, u_char* regPtrY, u_char nBytes) {
     // Assume No Overlap
     V[0xF] = 0x0;
 
-    for (u_int16_t i = I; i < (I + nBytes); i++) {
-        // Get x and y Coordinates with Wapping Handled
-        u_char x = wrap(*regPtrX, 64);
-        u_char y = wrap(*regPtrY, 32);
-        
-        // Backup Previous Pixel
-        u_char prevPixel = display[x][y];
+    for (u_int16_t i = I; i < (I + nBytes); i++) {  // Y-Coord
 
-        // Set Display at (x,y) to mem[i]
-        display[x][y] ^= memory[i];
+        // Draw Width of Sprite
+        for (int bit = 0; bit < 8; bit++) {  // X-Cord
+            // Get x and y Coordinates with Wapping Handled
+            u_char x = wrap((*regPtrX + bit), 64);
+            u_char y = wrap((*regPtrY + (i - I)), 32);
 
-        // Check if Overlap
-        if ((prevPixel | memory[i]) != display[x][y])
-            V[0xF] = 0x1;
+            // Get Individual Pixel
+            u_char pixel = (((memory[i] << bit) & 0x80) >> 7);  //  (Backwards?)
+
+            // Check for Overlap
+            if (display[x][y] && pixel)
+                V[0xF] = 0x1;
+
+            // XOR Onto Display
+            display[x][y] ^= pixel;
+        }
     }
 }
 

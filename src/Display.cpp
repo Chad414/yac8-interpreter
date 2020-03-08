@@ -39,6 +39,7 @@ void Display::run() {
     SDL_Event windowEvent;
     bool keyPos = true;     // False = KeyDown | True = KeyUp
     SDL_Scancode* keyCode;  // Stored Key ScanCode
+    bool isCpuRun = false;  // DEBUG: Pause/Play
 
     // RUN LOOP
     while (true) {
@@ -81,6 +82,8 @@ void Display::run() {
                     cpu->displayDump(std::cout);
                     cpu->regDump(std::cout);
                     cpu->keyDump(std::cout);
+                } else if (!keyPos && *keyCode == SDL_SCANCODE_RETURN) {
+                    isCpuRun = !isCpuRun;
                 }
 
                 // Reset Key Pos
@@ -91,9 +94,17 @@ void Display::run() {
                 break;
             }
 
-
             // Check if close button was clicked
             if (windowEvent.type == SDL_QUIT) break;
+        }
+
+        // DEBUG: Play Run
+        if (isCpuRun) {
+            system("clear && date");
+            cpu->run(true);
+            cpu->displayDump(std::cout);
+            cpu->regDump(std::cout);
+            cpu->keyDump(std::cout);
         }
 
         // Swap front and back buffer
