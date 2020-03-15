@@ -4,7 +4,7 @@
 #include <cstring>
 #include <sstream>
 #include <stack>
-#include "../include/Disassembler.h"
+#include "Disassembler.h"
 
 #define CHIP8_DEBUG 0
 
@@ -56,14 +56,14 @@ class CHIP8 {
     std::stack<u_int16_t> stack;  // Store return addresses when subroutines are called
     u_char dTimer;                // Delay Timer 60Hz (Count down from 60 to 0)
     u_char sTimer;                // Sound timer 60Hz (Count down from 60 to 0)
-    u_char display[64][32];       // Graphics are Monochrome 64x32 Pixels
     std::ostream *out;            // Output Stream for Outputting Execution Instruciton Information
 
   private:        // Private Methods
     void init();  // Initiates CHIP8 Data
 
-  public:            // Public Variables
-    u_char key[16];  // 16 Key Hex Keyboard (Key ranges from 0-F) | Set as True(0x1) or False(0x0)
+  public:                    // Public Variables
+    u_char display[64][32];  // Graphics are Monochrome 64x32 Pixels
+    u_char key[16];          // 16 Key Hex Keyboard (Key ranges from 0-F) | Set as True(0x1) or False(0x0)
 
   public:                              // Public Methods
     CHIP8();                           // Constructs CHIP8

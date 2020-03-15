@@ -1,6 +1,8 @@
 # To-Do List
 
 - [ ] Implement Graphics
+  - [ ] Optimize Shaders
+  - [ ] Better Vertex Generation
 - [ ] Implement Timers
   - [ ] Make sure they Decrement :)
 - [ ] Debug Mode 👾

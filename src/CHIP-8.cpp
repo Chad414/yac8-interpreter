@@ -8,6 +8,7 @@
  */
 CHIP8::CHIP8() {
     this->init();
+    this->out = nullptr;
 }
 
 /**
