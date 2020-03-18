@@ -9,6 +9,9 @@
 #include <iomanip>
 #include <iostream>
 
+typedef unsigned char u_char;
+typedef unsigned __int16 u_int16_t;
+
 class Disassembler {
   private:
   public:

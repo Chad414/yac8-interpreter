@@ -8,6 +8,8 @@
 
 #define CHIP8_DEBUG 0
 
+
+
 /**
  * MEMORY:
  *  - 4KB Total Memory (0x000 - 0xFFF)

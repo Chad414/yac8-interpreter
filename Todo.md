@@ -1,5 +1,6 @@
 # To-Do List
 
+- [ ] Fix Memory Leak!
 - [ ] Implement Graphics
   - [ ] Optimize Shaders
   - [ ] Better Vertex Generation
