@@ -15,6 +15,10 @@ void Display::Preload() {
     // Load in Default Shaders
     defaultShader.compile("./Shaders/shader.vert", "./Shaders/shader.frag");
 
+	// Allocate Buffer Data to Screen Size
+    bufferData.resize(64 * 32);
+    std::cout << "Buffer Size: " << bufferData.size() << '\n';
+
     // Setting Up Verticies
     {
         /*
@@ -115,8 +119,7 @@ void Display::Preload() {
         // clang-format on
 
 
-        bufferData.push_back(
-            createBuffer(verticies, sizeof(verticies), indicies, sizeof(indicies), defaultShader.ID));
+		bufferData[0] = createBuffer(verticies, sizeof(verticies), indicies, sizeof(indicies), defaultShader.ID);
     }
 
 
@@ -126,7 +129,6 @@ void Display::Preload() {
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttribs);
     std::cout << "Maximum number of Vertex Attributes Supported: " << nrAttribs << std::endl;
 }
-
 
 
 void Display::Draw() {
@@ -159,7 +161,11 @@ void Display::Draw() {
 
     // Generate new Buffer Data from CHIP8 Display
     if(!((overallFrameCount+1) % 5)) {
-            bufferData.clear();
+        // Clear Entire Buffer
+		for(BufferData &bf : bufferData) {
+			BufferData::freeBufferData(&bf);
+		}
+
 
         float x_off = 0.012f * ((64/float(WIDTH))*10);
         float y_off = 0.04f * ((32/float(HEIGHT))*10);
@@ -198,16 +204,14 @@ void Display::Draw() {
                         3, 2, 1};
                     // clang-format on
 
-
-                    bufferData.push_back(
-                        createBuffer(verticies, sizeof(verticies), indicies, sizeof(indicies), defaultShader.ID));
+					bufferData[(y * 64) + x] = createBuffer(verticies, sizeof(verticies), indicies, sizeof(indicies), defaultShader.ID);
                 }
             }
         }
 
         // Run CHIP8
         cpu->run(true);
-        // cpu->displayDump(std::cout);
+         //cpu->displayDump(std::cout);
         // cpu->regDump(std::cout);
         // cpu->keyDump(std::cout);
     }

@@ -1,7 +1,8 @@
 # To-Do List
 
-- [ ] Fix Memory Leak!
-- [ ] Implement Graphics
+- [x] Fix Memory Leak!
+- [x] Implement Graphics
+  - [ ] Fix Stuttering Issue :(
   - [ ] Optimize Shaders
   - [ ] Better Vertex Generation
 - [ ] Implement Timers

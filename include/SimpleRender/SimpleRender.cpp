@@ -372,12 +372,13 @@ int SimpleRender::run() {
         // Clear the Screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Draw here...
+        
+		// Draw here...
         Draw();
-
 
         // Swap Buffers
         glfwSwapBuffers(window);
+        
 
         // Wait for Polling Events
         glfwPollEvents();
