@@ -161,53 +161,72 @@ void Display::Draw() {
 
     // Generate new Buffer Data from CHIP8 Display
     if(!((overallFrameCount+1) % 5)) {
-        // Clear Entire Buffer
-		for(BufferData &bf : bufferData) {
-			BufferData::freeBufferData(&bf);
-		}
+        // Clear Entire Buffer if Triggered to do So
+        if (cpu->clsTrigger) {
+			for(BufferData &bf : bufferData) {
+				BufferData::freeBufferData(&bf);
+			}
+
+			cpu->clsTrigger = false;	// Reset Trigger
+        }
 
 
+		// Calculate Offsets
         float x_off = 0.012f * ((64/float(WIDTH))*10);
         float y_off = 0.04f * ((32/float(HEIGHT))*10);
 
-        for (int y = 0; y < 32; y++) {
-            for (int x = 0; x < 64; x++) {
-                if (cpu->display[x][y]) {
-                    
-                    // Map to OpenGL Res
-                    float vx = map(float(x), 0, 64, -1, 1);
-                    float vy = map(float(y), 0, 32, -1, 1);
-                    
+
+		// Check Changes to Display
+        while (!cpu->deltaDisplay.empty()) {
+			// Get Pixel to Update
+            Pixel &p = cpu->deltaDisplay.top();
+
+			// Clear Buffer at Pixel
+			//  This way if Pixel was removed, it's removed prior
+            BufferData::freeBufferData(&bufferData[(p.y * 64) + p.x]);
+
+			// Check if Pixel Turned on
+            if (p.val) {
+				// Map to OpenGL Res
+				float vx = map(float(p.x), 0, 64, -1, 1);
+				float vy = map(float(p.y), 0, 32, -1, 1);
+
+				// Generate Points for Box
+				float x1 = vx - x_off;
+				float y1 = -vy + y_off;
+				float x2 = vx + x_off;
+				float y2 = -vy + y_off;
+				float x3 = vx + x_off;
+				float y3 = -vy - y_off;
+				float x4 = vx - x_off;
+				float y4 = -vy - y_off;
 
 
-                    // Generate Points for Box
-                    float x1 = vx - x_off;
-                    float y1 = -vy + y_off;
-                    float x2 = vx + x_off;
-                    float y2 = -vy + y_off;
-                    float x3 = vx + x_off;
-                    float y3 = -vy - y_off;
-                    float x4 = vx - x_off;
-                    float y4 = -vy - y_off;
+				// Create Data for Buffer
+				// clang-format off
+				GLfloat verticies[] = {
+					// VERTEX<vec3>		RGBA<vec4>
+					x1, y1, 0.f,        1.0f, 1.0f, 1.0f, 1.0f,  // [0,0]        0
+					x2, y2, 0.f,        1.0f, 1.0f, 1.0f, 1.0f,  // [1,1]        1
+					x3, y3, 0.f,        1.0f, 1.0f, 1.0f, 1.0f,  // [1,0]        2
+					x4, y4, 0.f,        1.0f, 1.0f, 1.0f, 1.0f   // [0,1]        3
+				};
 
-                    // clang-format off
-                    GLfloat verticies[] = {
-                        // VERTEX<vec3>		RGBA<vec4>
-                        x1, y1, 0.f,        1.0f, 1.0f, 1.0f, 1.0f,  // [0,0]        0
-                        x2, y2, 0.f,        1.0f, 1.0f, 1.0f, 1.0f,  // [1,1]        1
-                        x3, y3, 0.f,        1.0f, 1.0f, 1.0f, 1.0f,  // [1,0]        2
-                        x4, y4, 0.f,        1.0f, 1.0f, 1.0f, 1.0f   // [0,1]        3
-                    };
+				GLuint indicies[] = {
+					3, 0, 1,
+					3, 2, 1};
+				// clang-format on
 
-                    GLuint indicies[] = {
-                        3, 0, 1,
-                        3, 2, 1};
-                    // clang-format on
 
-					bufferData[(y * 64) + x] = createBuffer(verticies, sizeof(verticies), indicies, sizeof(indicies), defaultShader.ID);
-                }
+				// Update Buffer Associated with Pixel
+				bufferData[(p.y * 64) + p.x] = createBuffer(verticies, sizeof(verticies), indicies, sizeof(indicies), defaultShader.ID);
             }
-        }
+
+
+			// Pop off Updated Pixel
+            cpu->deltaDisplay.pop();
+		}
+
 
         // Run CHIP8
         cpu->run(true);

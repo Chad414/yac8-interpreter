@@ -1,10 +1,10 @@
 #pragma once
-#include <stdlib.h>
-#include <time.h>
+#include "Disassembler.h"
 #include <cstring>
 #include <sstream>
 #include <stack>
-#include "Disassembler.h"
+#include <stdlib.h>
+#include <time.h>
 
 #define CHIP8_DEBUG 0
 
@@ -49,6 +49,14 @@ const u_char fontSet[0x50] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80   // F
 };
 
+// Used for Pixel Change Identificaiton
+//  (x,y) Positions for Pixel
+struct Pixel {
+    u_int16_t x;
+    u_int16_t y;
+    u_char val;
+};
+
 class CHIP8 {
   private:                        // Private Variables
     u_char memory[4096];          // 4K Bytes (0x000 - 0xFFF)
@@ -67,16 +75,9 @@ class CHIP8 {
     u_char display[64][32];  // Graphics are Monochrome 64x32 Pixels
     u_char key[16];          // 16 Key Hex Keyboard (Key ranges from 0-F) | Set as True(0x1) or False(0x0)
 
-  public:                              // Public Methods
-    CHIP8();                           // Constructs CHIP8
-    CHIP8(std::ostream *);             // Constructs CHIP8 with Output Stream
-    void loadROM(char *romFile);       // Loads ROM Data into RAM
-    void run(bool);                    // Runs Interpreter Sequentially or Infinitely
-    void memDump(std::ostream &);      // Returns a Memory Dump
-    void regDump(std::ostream &);      // Outputs Register Dump to Output Stream
-    void stackDump(std::ostream &);    // Outputs Stack Dump to Output Stream
-    void keyDump(std::ostream &);      // Dumps 16 Key Keyboard Bytes
-    void displayDump(std::ostream &);  // Dumps Display to Stream
+    // Variables for Triggering Events on OpenGL
+    bool clsTrigger;					// Trigger Buffer Clear
+    std::stack<Pixel> deltaDisplay;		// Changes in Display to Update (Pixel Changes)
 
     void CLS();                            // 00E0 Clears the Screen
     void RET();                            // 00EE Return from Subroutine, return;
