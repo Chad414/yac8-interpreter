@@ -79,6 +79,17 @@ class CHIP8 {
     bool clsTrigger;					// Trigger Buffer Clear
     std::stack<Pixel> deltaDisplay;		// Changes in Display to Update (Pixel Changes)
 
+  public:                              // Public Methods
+    CHIP8();                           // Constructs CHIP8
+    CHIP8(std::ostream *);             // Constructs CHIP8 with Output Stream
+    void loadROM(char *romFile);       // Loads ROM Data into RAM
+    void run(bool);                    // Runs Interpreter Sequentially or Infinitely
+    void memDump(std::ostream &);      // Returns a Memory Dump
+    void regDump(std::ostream &);      // Outputs Register Dump to Output Stream
+    void stackDump(std::ostream &);    // Outputs Stack Dump to Output Stream
+    void keyDump(std::ostream &);      // Dumps 16 Key Keyboard Bytes
+    void displayDump(std::ostream &);  // Dumps Display to Stream
+
     void CLS();                            // 00E0 Clears the Screen
     void RET();                            // 00EE Return from Subroutine, return;
     void JP(u_int16_t);                    // 1NNN, BNNN Jump to address NNN
