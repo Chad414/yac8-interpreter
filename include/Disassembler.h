@@ -10,7 +10,10 @@
 #include <iostream>
 
 typedef unsigned char u_char;
+
+#ifndef __GNUC__      // GNU C Library
 typedef unsigned __int16 u_int16_t;
+#endif
 
 class Disassembler {
   private:
