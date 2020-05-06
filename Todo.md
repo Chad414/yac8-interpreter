@@ -1,10 +1,12 @@
 # To-Do List
 
+- [ ] Transition to SDL
+  - [x] Translate Inputs
+  - [x] Draw Buffer
+  - [ ] Fixed Update
+  - [ ] Make sure Win10 Works
+  - [ ] Clean up from GLFW
 - [x] Fix Memory Leak!
-- [x] Implement Graphics
-  - [ ] Fix Stuttering Issue :(
-  - [ ] Optimize Shaders
-  - [ ] Better Vertex Generation
 - [ ] Implement Timers
   - [ ] Make sure they Decrement :)
 - [ ] Debug Mode 👾
