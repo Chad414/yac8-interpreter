@@ -34,7 +34,7 @@ class Display : SimpleRender {
 
   private:                                 // 2D SimpleRender Overloaded Methods
     void Draw();                                    // Main Draw location of Application
-    void onKey(SDL_KeyboardEvent &){};              // OnKey Press Method
+    void onKey(SDL_KeyboardEvent &);                // OnKey Press Method
     void onMouse(double, double){};                 // On Mouse Movement
     void onMouseClick(SDL_MouseButtonEvent &){};    // On Mouse Click
     void onMouseScroll(double, double){};           // On Mouse Scroll

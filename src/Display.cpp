@@ -46,13 +46,15 @@ void Display::Draw() {
 /**
  * Handle Key Press on CHIP8 Key Map
  */
-void Display::onKey(int key, int scancode, int action, int mods) {
+void Display::onKey(SDL_KeyboardEvent &key) {
+	// printf("KEY: Key[%d], ScanCode[%d], State[%d], Mod[%d]\n", k.keysym.sym, k.keysym.scancode, k.state, k.keysym.mod);
+    
     // Adjust Transformation
-    if (action == SDL_PRESSED || action == SDL_RELEASED) {
+    if (key.type == SDL_PRESSED || key.type == SDL_RELEASED) {
         // Set Key Value
         for (u_char i = 0x0; i <= 0xF; i++) {
-            if (key == keyMap[i])
-                cpu->key[i] = (action == SDL_PRESSED);  // Set CPU's Key to Position Pressed
+            if (key.keysym.sym == keyMap[i])
+                cpu->key[i] = (key.type == SDL_PRESSED);  // Set CPU's Key to Position Pressed
         }
     }
 }
