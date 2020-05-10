@@ -1,7 +1,3 @@
-//
-// Created by chad on 3/1/20.
-//
-
 #include "../include/Disassembler.h"
 #include <sstream>
 using namespace std;

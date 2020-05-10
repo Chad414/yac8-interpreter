@@ -3,9 +3,9 @@
 - [ ] Transition to SDL
   - [x] Translate Inputs
   - [x] Draw Buffer
-  - [ ] Fixed Update
+  - [x] Fixed Update (*kindda*)
   - [ ] Make sure Win10 Works
-  - [ ] Clean up from GLFW
+  - [x] Clean up from GLFW
 - [x] Fix Memory Leak!
 - [ ] Implement Timers
   - [ ] Make sure they Decrement :)
@@ -24,3 +24,4 @@
   - [x] Stack, Stack Pointer(SP), Program Counter(PC) 
 - [x] Read binary from CHIP-8 roms in the correct order
 - [x] Disassemble opcodes
+- [ ] Optimize Compiled Binary from Warnings

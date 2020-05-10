@@ -31,6 +31,7 @@ void CHIP8::init() {
     I = 0x0;
     dTimer = 0x0;
     sTimer = 0x0;
+    drawFlag = false;
 
     // Clear Screen
     CLS();
@@ -42,9 +43,6 @@ void CHIP8::init() {
     // Clear Keys
     for (u_char& k : key)
         k = false;
-
-	// Initialize Triggers
-    clsTrigger = false;
 }
 
 /**
@@ -493,9 +491,7 @@ void CHIP8::run(bool isSequential) {
  */
 void CHIP8::CLS() {
     memset(display, 0x00, 64 * 32);
-
-	// Set Trigger for OpenGL to Clear Buffers
-    clsTrigger = true;
+    drawFlag = true;
 }
 
 /**
@@ -747,11 +743,10 @@ void CHIP8::DRW(u_char* regPtrX, u_char* regPtrY, u_char nBytes) {
 
             // XOR Onto Display
             display[x][y] ^= pixel;
-
-			// Keep track of Changes in Display
-            deltaDisplay.push({x, y, pixel});
         }
     }
+
+    drawFlag = true;
 }
 
 

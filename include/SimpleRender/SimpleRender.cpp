@@ -48,7 +48,7 @@ void SimpleRender::onMouseScroll(double xOffset, double yOffset) {
  ***********************************************************
  */
 
-const double SimpleRender::getFPS() {
+double SimpleRender::getFPS() {
 	return FPS;
 }
 
@@ -148,7 +148,7 @@ void SimpleRender::InitRender() {
 
 int SimpleRender::run() {
 	/* Keep track of FPS & Fixed Upate */
-    double lastTime = SDL_GetTicks();
+    u_int32_t lastTime = SDL_GetTicks();
     int frameCount = 0;
 
     /* Run Pre-Start Function */
@@ -190,12 +190,12 @@ int SimpleRender::run() {
         }
 
 		// Measure the Speed (FPS)
-		double currentTime = SDL_GetTicks();
+		u_int32_t currentTime = SDL_GetTicks();
 		frameCount++;
-		if (currentTime - lastTime >= 1.0) {
+		if (currentTime - lastTime >= 1000) {   // 1 Second Elapsed
 			FPS = frameCount;
-			frameCount = 0;
-			lastTime += 1.0;
+            frameCount = 0;
+            lastTime += 1000;
 		}
 
         // Clear Screen
@@ -207,7 +207,7 @@ int SimpleRender::run() {
 		// Keep Track of Overall FrameCount
         overallFrameCount++;
     }
-	
+
     // No Issues
     return 0;
 }

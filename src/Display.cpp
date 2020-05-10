@@ -15,24 +15,29 @@ void Display::Draw() {
 
 	SDL_SetWindowTitle(window, titleBuffer);
 
+    // Redraw ONLY if Draw Flag Flipped
+    if(cpu->drawFlag) {
+        // Get Texture Pixels
+        void *pixels_ptr;
+        int pitch;
 
-	// Get Texture Pixels
-	void *pixels_ptr;
-	int pitch;
-
-	SDL_LockTexture(texture, nullptr, &pixels_ptr, &pitch);
-	uint32_t *pixels = static_cast<uint32_t *>(pixels_ptr);
+        SDL_LockTexture(texture, nullptr, &pixels_ptr, &pitch);
+        uint32_t *pixels = static_cast<uint32_t *>(pixels_ptr);
 
 
-	// Handle Pixles
-    for (int x = 0; x < 64; x++)
-        for (int y = 0; y < 32; y++)
-            drawPixel(x, y, cpu->display[x][y] ? 0xFFFFFF : 0x00, pixels);
+        // Handle Pixles
+        for (int x = 0; x < 64; x++)
+            for (int y = 0; y < 32; y++)
+                drawPixel(x, y, cpu->display[x][y] ? 0xFFFFFF : 0x00, pixels);
 
-    // Apply Updated Pixels & Refresh Renderer
-    SDL_UnlockTexture(texture);
-	SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-	SDL_RenderPresent(renderer);
+        // Apply Updated Pixels & Refresh Renderer
+        SDL_UnlockTexture(texture);
+        SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+        SDL_RenderPresent(renderer);
+
+        // Unswitch
+        cpu->drawFlag = false;
+    }
 
 
     // Run CHIP8
@@ -41,6 +46,8 @@ void Display::Draw() {
     // cpu->regDump(std::cout);
     // cpu->keyDump(std::cout);
 
+    // Slow Down Draw (60FPS)
+    std::this_thread::sleep_for(std::chrono::milliseconds(16));
 }
 
 /**
@@ -50,11 +57,11 @@ void Display::onKey(SDL_KeyboardEvent &key) {
 	// printf("KEY: Key[%d], ScanCode[%d], State[%d], Mod[%d]\n", k.keysym.sym, k.keysym.scancode, k.state, k.keysym.mod);
     
     // Adjust Transformation
-    if (key.type == SDL_PRESSED || key.type == SDL_RELEASED) {
+    if (key.state == SDL_PRESSED || key.state == SDL_RELEASED) {
         // Set Key Value
         for (u_char i = 0x0; i <= 0xF; i++) {
             if (key.keysym.sym == keyMap[i])
-                cpu->key[i] = (key.type == SDL_PRESSED);  // Set CPU's Key to Position Pressed
+                cpu->key[i] = (key.state == SDL_PRESSED);  // Set CPU's Key to Position Pressed
         }
     }
 }

@@ -74,10 +74,7 @@ class CHIP8 {
   public:                    // Public Variables
     u_char display[64][32];  // Graphics are Monochrome 64x32 Pixels
     u_char key[16];          // 16 Key Hex Keyboard (Key ranges from 0-F) | Set as True(0x1) or False(0x0)
-
-    // Variables for Triggering Events on OpenGL
-    bool clsTrigger;					// Trigger Buffer Clear
-    std::stack<Pixel> deltaDisplay;		// Changes in Display to Update (Pixel Changes)
+    bool drawFlag;           // Flag that Indicates a Draw Occured (Clear Counts)
 
   public:                              // Public Methods
     CHIP8();                           // Constructs CHIP8

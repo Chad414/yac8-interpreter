@@ -5,6 +5,7 @@
 #define DISPLAY_DEBUG_MODE 1  // Debug Mode Enable (F1 Key Outputs)
 
 #include <vector>
+#include <thread>
 #include "CHIP-8.h"
 #include "SimpleRender/SimpleRender.h"
 
