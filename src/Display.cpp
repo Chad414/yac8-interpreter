@@ -40,6 +40,9 @@ void Display::Draw() {
     }
 
 
+    // Draw Debug Menu on Textures
+
+
     // Run CHIP8
     cpu->run(true);
     //cpu->displayDump(std::cout);
@@ -48,6 +51,40 @@ void Display::Draw() {
 
     // Slow Down Draw (60FPS)
     std::this_thread::sleep_for(std::chrono::milliseconds(16));
+}
+
+void Display::Preload() {
+    /* Configure SDL Properties */
+	// Initialize Window, Renderer, & Texture
+    //  Texture will be used to draw on
+    SDL_Init(SDL_INIT_VIDEO);
+
+    // Window Information
+    int width = WIDTH * RES_SCALE;
+    int height = HEIGHT * RES_SCALE;
+
+    // Check if Debug Setup
+    if(isDebugMode) {
+        // Change Rendering for Debug Area
+    }
+
+
+    window = SDL_CreateWindow(
+        "yagb_emu",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        width,
+        height,
+        SDL_WINDOW_OPENGL);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    texture = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_RGB888,
+        SDL_TEXTUREACCESS_STREAMING,
+        WIDTH,
+        HEIGHT);
+
+    
 }
 
 /**
@@ -84,4 +121,12 @@ void Display::run() {
     int status = SimpleRender::run();
     if (status != 0)
         std::cerr << "Status = " << status << std::endl;
+}
+
+
+/**
+ * Enables Debug Mode
+ */
+void Display::enableDebugMode() {
+    this->isDebugMode = true;
 }

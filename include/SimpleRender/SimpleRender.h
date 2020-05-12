@@ -1,12 +1,13 @@
 #pragma once
 
 // Core Libraries
+#include <stdio.h>
+#include <string.h>
+
 #include <cstring>
 #include <fstream>
 #include <iostream>
-#include <string.h>
 #include <vector>
-#include <stdio.h>
 
 // SDL Libraries
 #include <SDL2/SDL.h>
@@ -19,10 +20,9 @@
 
 
 class SimpleRender {
-  private:  // Private Untouchable Variables
-    const u_int8_t RES_SCALE;
-
+  private:    // Private Untouchable Variables
   protected:  // Protected Variables | GL Window Data
+    const u_int8_t RES_SCALE;
     double FPS;  // Current Calculated FPS Value
     uint32_t overallFrameCount = 0;
 
@@ -30,7 +30,7 @@ class SimpleRender {
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *texture;
-    const char* title = "CHIP-8";
+    const char *title = "CHIP-8";
     char titleBuffer[256];  // Used for Temporary Character Storage (Window Title)
 
 
@@ -76,7 +76,7 @@ class SimpleRender {
      * @param scale - Upscale Resolution
      * @param title - Window Title
      */
-    SimpleRender(u_int8_t scale, const char* title = "Window");
+    SimpleRender(u_int8_t scale, const char *title = "Window");
 
     /**
      * Destructor to clean up Resources used by SDL

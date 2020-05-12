@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
     char *romPath = NULL;
     char *asmOutput = NULL;
     bool isDisassemble = false;
+    bool isDebug = false;
 
     // Check Arguments
     for (int i = 0; i < argc; ++i) {
@@ -29,7 +30,9 @@ int main(int argc, char **argv) {
                  << "-d \t\t Disassemble Given Rom\n";
             exit(0);
         } else if (arg == "-d") {
-            isDisassemble = true;  // Disassemble and Output
+            isDisassemble = true;       // Disassemble and Output
+        } else if (arg == "--debug") {  // Debug Mode
+            isDebug = true;
         }
 
         // Check for Path Options
@@ -67,14 +70,12 @@ int main(int argc, char **argv) {
     Display display(&cpu, 8);
     cpu.loadROM(romPath);
     // cpu.run(true);
+
+    // Check to turn on Debug Mode
+    if (isDebug) {
+        display.enableDebugMode();
+    }
+
     display.run();
-
-
-    exit(0);
-    // DEBUG: Hex Dump for Visual
-    // Hex Dump
-    cout << "\n\n\nHEX DUMP" << endl;
-    dasm.hexDump(romPath, cout);
-
     return 0;
 }

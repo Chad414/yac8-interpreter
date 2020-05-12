@@ -20,6 +20,11 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 find_package(SDL2 REQUIRED COMPONENTS main)
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2main_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${CMAKE_BINARY_DIR})
 
+# Add spdlog as Dependency
+add_subdirectory(dependencies/spdlog)
+find_package(spdlog)
+
+
 add_executable(yac8_interpreter 
     src/main.cpp 
     src/Disassembler.cpp include/Disassembler.h 
@@ -27,6 +32,5 @@ add_executable(yac8_interpreter
     include/SimpleRender/SimpleRender.cpp include/SimpleRender/SimpleRender.h
     src/Display.cpp include/Display.h
     )
-    
 
-target_link_libraries(yac8_interpreter ${SDL2_LIBS} ${OPENGL_LIBRARIES})
+target_link_libraries(yac8_interpreter ${SDL2_LIBS} ${OPENGL_LIBRARIES} spdlog)
