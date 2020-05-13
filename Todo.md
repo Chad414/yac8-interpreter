@@ -1,10 +1,11 @@
 # To-Do List
 
 - [ ] Transition to SDL
+  - [ ] Fix FPS Limit ❗❗❗
   - [x] Translate Inputs
   - [x] Draw Buffer
   - [x] Fixed Update (*kindda*)
-  - [ ] Make sure Win10 Works
+  - [x] Make sure Win10 Works
   - [x] Clean up from GLFW
 - [x] Fix Memory Leak!
 - [ ] Implement Timers
