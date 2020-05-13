@@ -2,6 +2,7 @@
 
 /**
  * Sets the Pixel to a color at the position given
+ *  Draws pixel for the Main Draw Pixels
  * 
  * @param x - The X-axis position
  * @param y - The Y-axis position
@@ -200,9 +201,6 @@ int SimpleRender::run() {
             frameCount = 0;
             lastTime += 1000;
         }
-
-        // Clear Screen
-        SDL_RenderClear(renderer);
 
         // Draw Here...
         Draw();

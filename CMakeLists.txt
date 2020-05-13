@@ -34,7 +34,9 @@ IF (WIN32)
 ELSE()
     set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
     find_package(SDL2 REQUIRED COMPONENTS main)
-    include_directories(${SDL2_INCLUDE_DIRS} ${SDL2main_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} ${CMAKE_BINARY_DIR})
+    find_package(SDL2_ttf REQUIRED)
+    
+    include_directories(${SDL2_INCLUDE_DIRS} ${SDL2main_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${CMAKE_BINARY_DIR})
 ENDIF()
 
 # Add spdlog as Dependency
@@ -50,4 +52,4 @@ add_executable(yac8_interpreter
     src/Display.cpp include/Display.h
     )
 
-target_link_libraries(yac8_interpreter ${SDL2_LIBS} ${OPENGL_LIBRARIES} spdlog)
+target_link_libraries(yac8_interpreter ${SDL2_LIBS} ${SDL2_TTF_LIBRARIES} ${OPENGL_LIBRARIES} spdlog)

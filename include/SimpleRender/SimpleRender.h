@@ -3,6 +3,7 @@
 // Core Libraries
 #include <stdio.h>
 #include <string.h>
+#include "../types.h"
 
 #include <cstring>
 #include <fstream>

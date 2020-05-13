@@ -187,6 +187,17 @@ void CHIP8::displayDump(std::ostream& out) {
 }
 
 /**
+ * Returns Register's Value at given Index
+ * 
+ * @param index - Register's Index
+ */
+u_char CHIP8::getRegisterVal(u_char index) {
+    if(index >= 0x0 && index <= 0xF) // Verify within Bounds
+        return V[index];
+    return 0;
+}
+
+/**
  * Begin running the interpreter
  * 
  * @param - isSequential - Sequential run or Infinite Loop (for threading)

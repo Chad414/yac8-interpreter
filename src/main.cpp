@@ -4,6 +4,7 @@
 #include "../include/CHIP-8.h"
 #include "../include/Disassembler.h"
 #include "../include/Display.h"
+#include "../include/types.h"
 
 using namespace std;
 

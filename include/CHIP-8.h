@@ -76,16 +76,17 @@ class CHIP8 {
     u_char key[16];          // 16 Key Hex Keyboard (Key ranges from 0-F) | Set as True(0x1) or False(0x0)
     bool drawFlag;           // Flag that Indicates a Draw Occured (Clear Counts)
 
-  public:                              // Public Methods
-    CHIP8();                           // Constructs CHIP8
-    CHIP8(std::ostream *);             // Constructs CHIP8 with Output Stream
-    void loadROM(char *romFile);       // Loads ROM Data into RAM
-    void run(bool);                    // Runs Interpreter Sequentially or Infinitely
-    void memDump(std::ostream &);      // Returns a Memory Dump
-    void regDump(std::ostream &);      // Outputs Register Dump to Output Stream
-    void stackDump(std::ostream &);    // Outputs Stack Dump to Output Stream
-    void keyDump(std::ostream &);      // Dumps 16 Key Keyboard Bytes
-    void displayDump(std::ostream &);  // Dumps Display to Stream
+  public:                                 // Public Methods
+    CHIP8();                              // Constructs CHIP8
+    CHIP8(std::ostream *);                // Constructs CHIP8 with Output Stream
+    void loadROM(char *romFile);          // Loads ROM Data into RAM
+    void run(bool);                       // Runs Interpreter Sequentially or Infinitely
+    void memDump(std::ostream &);         // Returns a Memory Dump
+    void regDump(std::ostream &);         // Outputs Register Dump to Output Stream
+    void stackDump(std::ostream &);       // Outputs Stack Dump to Output Stream
+    void keyDump(std::ostream &);         // Dumps 16 Key Keyboard Bytes
+    void displayDump(std::ostream &);     // Dumps Display to Stream
+    u_char getRegisterVal(u_char);        // Returns Register's Value at given Index
 
     void CLS();                            // 00E0 Clears the Screen
     void RET();                            // 00EE Return from Subroutine, return;

@@ -8,15 +8,22 @@
 
 #include <thread>
 #include <vector>
+#include <functional>
 
 #include "CHIP-8.h"
 #include "SimpleRender/SimpleRender.h"
-
+#include <SDL2/SDL_ttf.h>
 
 class Display : SimpleRender {
+  private:    // Debug Menu Configuration
+    bool isDebugMode = false;     // Enables Debug Options
+    bool isLoop, isStep;          // Steps through or loops Through CPU Run
+    u_char *debugBuffer;          // Debug Buffer Screen Area (Used for Borders)
+    SDL_Texture *debugTexture;    // Texture to use on Debug Area
+    SDL_Rect debugArea, drawArea; // Split up Draw and Debug Areas
+
   private:
     CHIP8 *cpu;
-    bool isDebugMode = false;
     int keyMap[16] = {
         // Mapped Keys for CPU 16 Hex Keyboard
         SDLK_SPACE,   // 0x0
@@ -48,8 +55,9 @@ class Display : SimpleRender {
 
   public:
     Display(CHIP8 *, u_int8_t upscale);
-    void enableDebugMode();  // Enables Debug Mode
+    ~Display();
 
+    void enableDebugMode();  // Enables Debug Mode
     void run();
 };
 
