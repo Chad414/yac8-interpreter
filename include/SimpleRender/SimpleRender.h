@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <thread>
 
 // SDL Libraries
 #include <SDL2/SDL.h>
@@ -22,6 +23,8 @@
 
 class SimpleRender {
   private:    // Private Untouchable Variables
+    bool isLoop;
+  
   protected:  // Protected Variables | GL Window Data
     const u_int8_t RES_SCALE;
     double FPS;  // Current Calculated FPS Value
@@ -41,6 +44,8 @@ class SimpleRender {
     virtual void onMouse(double xPos, double yPos);
     virtual void onMouseScroll(double xOffset, double yOffset);
 
+  private:    // Private Static Methods (Threads)
+    static void handleEventPolling(SDL_Event *windowEvent, SimpleRender *parent);
 
   protected:  // Shared Methods
     /**

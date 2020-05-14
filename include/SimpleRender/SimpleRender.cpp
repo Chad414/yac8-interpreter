@@ -151,6 +151,52 @@ void SimpleRender::InitRender() {
         HEIGHT);
 }
 
+/**
+ * Window Evenet Handler, used to be run in a Thread
+ *  Polls every 1ms
+ * 
+ * @param windowEvent - Pointer to the Window Event from SDL
+ * @param parent - Pointer to the Parent Object to access Data
+ */
+void SimpleRender::handleEventPolling(SDL_Event *windowEvent, SimpleRender *parent) {
+    while(true) {
+        if (SDL_PollEvent(windowEvent)) {
+            // Check if close button was clicked
+            if (windowEvent->type == SDL_QUIT) { 
+                parent->isLoop = false;
+                return;
+            }
+
+            switch (windowEvent->type) {
+            // Handle Key Presses
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+                parent->onKey(windowEvent->key);
+                break;
+
+            // Handle Mouse Button
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+                parent->onMouseClick(windowEvent->button);
+                break;
+
+            case SDL_MOUSEMOTION:
+                parent->onMouse(windowEvent->motion.x, windowEvent->motion.y);
+                break;
+
+            case SDL_MOUSEWHEEL:
+                parent->onMouseScroll(windowEvent->wheel.x, windowEvent->wheel.y);
+                break;
+
+            default:
+                break;
+            }
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
 int SimpleRender::run() {
     /* Keep track of FPS & Fixed Upate */
     u_int32_t lastTime = SDL_GetTicks();
@@ -160,39 +206,13 @@ int SimpleRender::run() {
     Preload();
 
 
-    /* Keep Window open until 'Q' key is pressed */
+    /* Keep Window open until Quit - Hanlde Polling in Thread */
     SDL_Event windowEvent;
-    while (true) {
-        if (SDL_PollEvent(&windowEvent)) {
-            // Check if close button was clicked
-            if (windowEvent.type == SDL_QUIT) return 0;
+    std::thread event_thread(handleEventPolling, &windowEvent, this);
 
-            switch (windowEvent.type) {
-            // Handle Key Presses
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-                onKey(windowEvent.key);
-                break;
-
-            // Handle Mouse Button
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
-                onMouseClick(windowEvent.button);
-                break;
-
-            case SDL_MOUSEMOTION:
-                onMouse(windowEvent.motion.x, windowEvent.motion.y);
-                break;
-
-            case SDL_MOUSEWHEEL:
-                onMouseScroll(windowEvent.wheel.x, windowEvent.wheel.y);
-                break;
-
-            default:
-                break;
-            }
-        }
-
+    /* Start Looping */
+    isLoop = true;
+    while (isLoop) {
         // Measure the Speed (FPS)
         u_int32_t currentTime = SDL_GetTicks();
         frameCount++;
@@ -208,6 +228,9 @@ int SimpleRender::run() {
         // Keep Track of Overall FrameCount
         overallFrameCount++;
     }
+
+    // Wait till Event Handler Thread Quits
+    event_thread.join();
 
     // No Issues
     return 0;

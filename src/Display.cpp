@@ -35,6 +35,9 @@ void manipPixels(SDL_Texture *texture, std::function<void(uint32_t *pixels)> fn)
 
 
 void Display::Draw() {
+    // Keep Track of Last Draw
+    static u_int32_t startTime = SDL_GetTicks();
+    
     // Output FPS to Window Title
 	sprintf(titleBuffer, "%s [%.2f FPS]", title, getFPS());
 
@@ -199,10 +202,19 @@ void Display::Draw() {
         isStep = false;
     }
 
-    // Slow Down Draw (60FPS) TODO: Make sure this works :)
-    if(SDL_GetTicks() < 1000/60) {
-        std::this_thread::sleep_for(std::chrono::milliseconds( (1000 / 60) - SDL_GetTicks() ));
+    // NOTE: A small Patch, but not entirely Accurate :(
+    // Slow Down Draw (60FPS)
+
+    u_int32_t dTime = SDL_GetTicks() - startTime;       // Get the time it took to go through Draw
+
+    if(dTime < (1000/60)) {                             // Limit to 60FPS
+        std::this_thread::sleep_for(std::chrono::milliseconds( u_int64_t((1000 / 60) ) - dTime) );
+    }else {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60));
     }
+
+    startTime = SDL_GetTicks();
+
 }
 
 void Display::Preload() {
