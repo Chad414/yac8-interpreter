@@ -2,6 +2,7 @@
 
 - [ ] Transition to SDL
   - [ ] Fix FPS Limit ❗❗❗
+    - Look into the Logic and not an Example
   - [x] Translate Inputs
   - [x] Draw Buffer
   - [x] Fixed Update (*kindda*)
@@ -12,10 +13,10 @@
   - [ ] Make sure they Decrement :)
 - [ ] Debug Mode 👾
   - [x] Display Registers and their Values
-  - [ ] Visual for observing Interpreter going through ASM Code as the interpreter is running
+  - [x] Visual for observing Interpreter going through ASM Code as the interpreter is running
     - [x] Terminal Version
-    - [ ] GUI Version
-  - [ ] Be able to RUN or Run on Click (On Line at a time)
+    - [x] GUI Version
+  - [x] Be able to RUN or Run on Click (On Line at a time)
 - [ ] Configuration 🎮
   - [ ] Keymap Remap
   - [ ] Window Size

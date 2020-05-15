@@ -198,6 +198,16 @@ u_char CHIP8::getRegisterVal(u_char index) {
 }
 
 /**
+ * Sets the Output Stream for the Instructions to be
+ *  streamed into
+ * 
+ * @parma out - Pointer to the Output Stream
+ */
+void CHIP8::setOutputStream(std::ostream *out) {
+    this->out = out;
+}
+
+/**
  * Begin running the interpreter
  * 
  * @param - isSequential - Sequential run or Infinite Loop (for threading)

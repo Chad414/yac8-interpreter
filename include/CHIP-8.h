@@ -81,6 +81,7 @@ class CHIP8 {
     CHIP8(std::ostream *);                // Constructs CHIP8 with Output Stream
     void loadROM(char *romFile);          // Loads ROM Data into RAM
     void run(bool);                       // Runs Interpreter Sequentially or Infinitely
+    void setOutputStream(std::ostream *); // Sets the Output Stream of the Instructions
     void memDump(std::ostream &);         // Returns a Memory Dump
     void regDump(std::ostream &);         // Outputs Register Dump to Output Stream
     void stackDump(std::ostream &);       // Outputs Stack Dump to Output Stream

@@ -84,10 +84,20 @@ void Display::Draw() {
                     pixels[x + debugArea.w * y] = debugBuffer[x + debugArea.w * y] ? 0xAAAAAA : 0x00;
         });
 
+
+        // Obtain Instructions from Stream
+        //  Storing only 10 Instructions & Clearing Stream
+        if(out->str().length()) {
+            this->instructionWindow.push_front(out->str());         // Store Instructions in a Queue
+            if (this->instructionWindow.size() > 10)                // Keep 10 Instructions ONLY
+                this->instructionWindow.pop_back();
+            out->str( "" );                                         // Clear Stream
+        }
         
-        static TTF_Font *font = TTF_OpenFont("../res/fonts/OSD.ttf", 32);
+        
+        static TTF_Font *font = TTF_OpenFont("../res/fonts/InputMono-Regular.ttf", 24);
         if(font) {
-            SDL_RenderCopy(renderer, debugTexture, nullptr, &debugArea); // Draw Debug Texture Area
+            SDL_RenderCopy(renderer, debugTexture, nullptr, &debugArea); // Draw Debug Texture Area (Clearing the Window)
 
             // Store Backup of Area
             int h = debugArea.h;
@@ -99,8 +109,8 @@ void Display::Draw() {
             // Draw Title
             {
                 // Offset
-                debugArea.x += 12;
-                debugArea.w = 256;
+                debugArea.x += 8;
+                debugArea.w = 148;
                 debugArea.h = 16;
 
                 // Draw
@@ -186,6 +196,65 @@ void Display::Draw() {
                 debugArea.y = y;
             }
             
+
+            // Draw Instruction Window
+            {
+                // Store Prev Values (In Scope)
+                int w = instrArea.w;
+                int h = instrArea.h;
+                int x = instrArea.x;
+                int y = instrArea.y;
+
+                // Clear Window
+                SDL_Surface *s = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
+                SDL_Texture *t = SDL_CreateTextureFromSurface(renderer, s);
+                SDL_RenderCopy(renderer, t, nullptr, &instrArea); // Draw Debug Texture Area
+                SDL_FreeSurface(s);
+                SDL_DestroyTexture(t);
+
+
+                // Apply the Instructions from Queue
+                for (size_t i = 0;
+                     (i < this->instructionWindow.size()) && (i < 5);
+                     i++) {
+                         
+                    // Get Instruction
+                    const std::string &instr = this->instructionWindow[i];
+
+
+                    // Set Area Dimensions based on String
+                    instrArea.h = 32;                  // 32px Tall
+                    instrArea.w = instr.length() * 18; // 18px Per Character
+
+                    // Offset
+                    // instrArea.x += 155;
+                    instrArea.y += instrArea.h;
+
+
+                    // Create Text as Texture, WHITE=INSTR | PINK=CURR_INSTR
+                    SDL_Surface *surf = TTF_RenderText_Solid(
+                        font,
+                        instr.c_str(),
+                        i ? SDL_Color({255, 255, 255, 255}) : SDL_Color({255, 51, 116, 255}));
+                    SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
+
+
+                    // Apply Texture
+                    SDL_RenderCopy(renderer, tex, nullptr, &instrArea);
+
+                    // Free Memory
+                    SDL_FreeSurface(surf);
+                    SDL_DestroyTexture(tex);
+                }
+
+                // Restore Area Properties
+                instrArea.h = h;
+                instrArea.w = w;
+                instrArea.x = x;
+                instrArea.y = y;
+            }
+            
+            
         } else {
             spdlog::error("Display::Draw: Font Open Failed! Switching off Debug Mode");
             isDebugMode = false;
@@ -204,7 +273,6 @@ void Display::Draw() {
 
     // NOTE: A small Patch, but not entirely Accurate :(
     // Slow Down Draw (60FPS)
-
     u_int32_t dTime = SDL_GetTicks() - startTime;       // Get the time it took to go through Draw
 
     if(dTime < (1000/60)) {                             // Limit to 60FPS
@@ -230,16 +298,18 @@ void Display::Preload() {
 
     // Check if Debug Setup
     if(isDebugMode) {
+        // Create and get CPU Instrucitons
+        out = new std::stringstream();
+        cpu->setOutputStream(this->out);
+        
         // Setup Draw Area
         drawArea.w = width;
         drawArea.h = height;
 
         // Expand Window for Debug Area
         debugArea.x = width;        // Move the Debug Area to the Edge of the Draw Area
-
-        debugArea.w = 300;          // Set Size of Debug Area
+        debugArea.w = 164;          // Set Size of Debug Area
         debugArea.h = height;
-        
         width += debugArea.w;       // Expand Window
 
         // Allocate Debug Buffer Data
@@ -262,6 +332,14 @@ void Display::Preload() {
         for(int x =debugArea.w-borderThickness; x<debugArea.w; x++)     // Right Border
             for(int y =0; y<debugArea.h; y++)
                 debugBuffer[x + y * debugArea.w] = 0x1;
+
+        
+        // Setup Instruction Window Area
+        instrArea.w = width;        // Set Area Size
+        instrArea.h = 200;
+        instrArea.x = 0;            // Set Location (At Bottom)
+        instrArea.y = height;
+        height += instrArea.h;      // Expand Window
     }
 
 
@@ -336,6 +414,7 @@ Display::~Display() {
     // Clean up Debug Data
     delete[] debugBuffer;
     SDL_DestroyTexture(debugTexture);
+    if(this->out) delete out;
 
     // TrueType Done :0
     TTF_Quit();

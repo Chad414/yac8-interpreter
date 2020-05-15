@@ -6,9 +6,10 @@
 
 #include <spdlog/spdlog.h>
 
+#include <deque>
+#include <functional>
 #include <thread>
 #include <vector>
-#include <functional>
 
 #include "CHIP-8.h"
 #include "SimpleRender/SimpleRender.h"
@@ -16,11 +17,14 @@
 
 class Display : SimpleRender {
   private:    // Debug Menu Configuration
-    bool isDebugMode = false;     // Enables Debug Options
-    bool isLoop, isStep;          // Steps through or loops Through CPU Run
-    u_char *debugBuffer;          // Debug Buffer Screen Area (Used for Borders)
-    SDL_Texture *debugTexture;    // Texture to use on Debug Area
-    SDL_Rect debugArea, drawArea; // Split up Draw and Debug Areas
+    bool isDebugMode = false;                  // Enables Debug Options
+    bool isLoop, isStep;                       // Steps through or loops Through CPU Run
+    std::stringstream *out;                    // Used to store Output Stream from CPU
+    std::deque<std::string> instructionWindow; // Window of Previous 10 Instructions
+    u_char *debugBuffer;                       // Debug Buffer Screen Area (Used for Borders)
+    SDL_Texture *debugTexture;                 // Texture to use on Debug Area
+
+    SDL_Rect debugArea, instrArea, drawArea;   // Split up Draw and Debug Areas
 
   private:
     CHIP8 *cpu;
