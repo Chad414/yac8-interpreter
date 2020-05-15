@@ -30,6 +30,19 @@ void manipPixels(SDL_Texture *texture, std::function<void(uint32_t *pixels)> fn)
     SDL_UnlockTexture(texture);
 }
 
+/**
+ * Converts an Interger to Hex String
+ * @param i - Any Value that'll be converted to Hex String
+ */
+template <typename T>
+std::string int_to_hex(T i) {
+    std::stringstream stream;
+    stream << "0x"
+           << std::setfill('0') << std::setw(sizeof(T) * 2)
+           << std::uppercase << std::hex << i;
+    return stream.str();
+}
+
 /* SimpleRender Section */
 
 
@@ -89,7 +102,7 @@ void Display::Draw() {
         //  Storing only 10 Instructions & Clearing Stream
         if(out->str().length()) {
             this->instructionWindow.push_front(out->str());         // Store Instructions in a Queue
-            if (this->instructionWindow.size() > 10)                // Keep 10 Instructions ONLY
+            if (this->instructionWindow.size() > 20)                // Keep 20 Instructions ONLY
                 this->instructionWindow.pop_back();
             out->str( "" );                                         // Clear Stream
         }
@@ -215,7 +228,7 @@ void Display::Draw() {
 
                 // Apply the Instructions from Queue
                 for (size_t i = 0;
-                     (i < this->instructionWindow.size()) && (i < 5);
+                     (i < this->instructionWindow.size()) && (i < 11);
                      i++) {
                          
                     // Get Instruction
@@ -223,8 +236,8 @@ void Display::Draw() {
 
 
                     // Set Area Dimensions based on String
-                    instrArea.h = 32;                  // 32px Tall
-                    instrArea.w = instr.length() * 18; // 18px Per Character
+                    instrArea.h = 16;                  // 16px Tall
+                    instrArea.w = instr.length() * 9;  // 9px Per Character
 
                     // Offset
                     // instrArea.x += 155;
@@ -246,6 +259,103 @@ void Display::Draw() {
                     SDL_FreeSurface(surf);
                     SDL_DestroyTexture(tex);
                 }
+
+                // Restore Area Properties
+                instrArea.h = h;
+                instrArea.w = w;
+                instrArea.x = x;
+                instrArea.y = y;
+            }
+
+
+            // Draw PC, I, Timers
+            {
+                // Store Prev Values (In Scope)
+                int w = instrArea.w;
+                int h = instrArea.h;
+                int x = instrArea.x;
+                int y = instrArea.y;
+
+                // Offset
+                instrArea.x += 265;
+                instrArea.y += 16;
+
+                // Assign Program Counter
+                std::string str = "PC = " + int_to_hex(cpu->getProgramCounter());
+
+                // Set Area Dimensions based on String
+                instrArea.h = 16;                  // 16px Tall
+                instrArea.w = str.length() * 9;  // 9px Per Character
+
+                // Create Text as Texture, WHITE=INSTR | PINK=CURR_INSTR
+                // Apply Texture
+                // Free Memory
+                SDL_Surface *surf = TTF_RenderText_Solid(font, str.c_str(), {255, 255, 255, 255});
+                SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
+                SDL_RenderCopy(renderer, tex, nullptr, &instrArea);
+                SDL_FreeSurface(surf);
+                SDL_DestroyTexture(tex);
+
+
+                // Offset
+                instrArea.y += 16;
+
+                // Assign Index Register
+                str = "I = " + int_to_hex(cpu->getIndexReg());
+
+                // Set Area Dimensions based on String
+                instrArea.h = 16;                  // 16px Tall
+                instrArea.w = str.length() * 9;  // 9px Per Character
+
+                // Create Text as Texture, WHITE=INSTR | PINK=CURR_INSTR
+                // Apply Texture
+                // Free Memory
+                surf = TTF_RenderText_Solid(font, str.c_str(), {255, 255, 255, 255});
+                tex = SDL_CreateTextureFromSurface(renderer, surf);
+                SDL_RenderCopy(renderer, tex, nullptr, &instrArea);
+                SDL_FreeSurface(surf);
+                SDL_DestroyTexture(tex);
+
+
+                // Offset
+                instrArea.y += 16;
+
+                // Assign Delay Timer
+                str = "DT = " + int_to_hex(cpu->get_dTimer());
+
+                // Set Area Dimensions based on String
+                instrArea.h = 16;                  // 16px Tall
+                instrArea.w = str.length() * 9;  // 9px Per Character
+
+                // Create Text as Texture, WHITE=INSTR | PINK=CURR_INSTR
+                // Apply Texture
+                // Free Memory
+                surf = TTF_RenderText_Solid(font, str.c_str(), {255, 255, 255, 255});
+                tex = SDL_CreateTextureFromSurface(renderer, surf);
+                SDL_RenderCopy(renderer, tex, nullptr, &instrArea);
+                SDL_FreeSurface(surf);
+                SDL_DestroyTexture(tex);
+
+
+                // Offset
+                instrArea.y += 16;
+
+                // Assign Sound Timer
+                str = "ST = " + int_to_hex(cpu->get_sTimer());
+
+                // Set Area Dimensions based on String
+                instrArea.h = 16;                  // 16px Tall
+                instrArea.w = str.length() * 9;  // 9px Per Character
+
+                // Create Text as Texture, WHITE=INSTR | PINK=CURR_INSTR
+                // Apply Texture
+                // Free Memory
+                surf = TTF_RenderText_Solid(font, str.c_str(), {255, 255, 255, 255});
+                tex = SDL_CreateTextureFromSurface(renderer, surf);
+                SDL_RenderCopy(renderer, tex, nullptr, &instrArea);
+                SDL_FreeSurface(surf);
+                SDL_DestroyTexture(tex);
+
 
                 // Restore Area Properties
                 instrArea.h = h;

@@ -191,10 +191,38 @@ void CHIP8::displayDump(std::ostream& out) {
  * 
  * @param index - Register's Index
  */
-u_char CHIP8::getRegisterVal(u_char index) {
-    if(index >= 0x0 && index <= 0xF) // Verify within Bounds
+u_char CHIP8::getRegisterVal(u_char index) const {
+    if (index >= 0x0 && index <= 0xF)  // Verify within Bounds
         return V[index];
     return 0;
+}
+
+/**
+ * Returns the Current Delay Timer
+ */
+u_char CHIP8::get_dTimer() const {
+    return dTimer;
+}
+
+/**
+ * Returns the Current Sound Timer
+ */
+u_char CHIP8::get_sTimer() const {
+    return sTimer;
+}
+
+/**
+ * Returns the Current Index Register Value
+ */
+u_int16_t CHIP8::getIndexReg() const {
+    return I;
+}
+
+/**
+ * Returns the Current Program Counter Value
+ */
+u_int16_t CHIP8::getProgramCounter() const {
+    return PC;
 }
 
 /**

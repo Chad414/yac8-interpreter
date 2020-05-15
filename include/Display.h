@@ -20,7 +20,7 @@ class Display : SimpleRender {
     bool isDebugMode = false;                  // Enables Debug Options
     bool isLoop, isStep;                       // Steps through or loops Through CPU Run
     std::stringstream *out;                    // Used to store Output Stream from CPU
-    std::deque<std::string> instructionWindow; // Window of Previous 10 Instructions
+    std::deque<std::string> instructionWindow; // Window of Previous N Instructions
     u_char *debugBuffer;                       // Debug Buffer Screen Area (Used for Borders)
     SDL_Texture *debugTexture;                 // Texture to use on Debug Area
 

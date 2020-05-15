@@ -87,7 +87,12 @@ class CHIP8 {
     void stackDump(std::ostream &);       // Outputs Stack Dump to Output Stream
     void keyDump(std::ostream &);         // Dumps 16 Key Keyboard Bytes
     void displayDump(std::ostream &);     // Dumps Display to Stream
-    u_char getRegisterVal(u_char);        // Returns Register's Value at given Index
+
+    u_char getRegisterVal(u_char) const;  // Returns Register's Value at given Index
+    u_char get_dTimer() const;            // Returns the Delay Timer Value
+    u_char get_sTimer() const;            // Returns the Sound Timer Value
+    u_int16_t getIndexReg() const;        // Returns the Index Register Value
+    u_int16_t getProgramCounter() const;  // Returns the Program Counter Value
 
     void CLS();                            // 00E0 Clears the Screen
     void RET();                            // 00EE Return from Subroutine, return;
