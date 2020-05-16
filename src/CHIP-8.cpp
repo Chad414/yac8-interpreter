@@ -198,6 +198,18 @@ u_char CHIP8::getRegisterVal(u_char index) const {
 }
 
 /**
+ * Returns the value in memory at given Address
+ * 
+ * @param addr - The Address in Memory
+ */
+u_char CHIP8::getMemVal(u_int16_t addr) const {
+    if (addr <= 0xFFF && addr >= 0x000) // Make sure within Bounds
+        return memory[addr];
+    else
+        return 0x00;
+}
+
+/**
  * Returns the Current Delay Timer
  */
 u_char CHIP8::get_dTimer() const {
@@ -724,7 +736,7 @@ void CHIP8::SHL(u_char* regPtr1, u_char* regPtr2) {
 }
 
 /**
- * Opcode(s): ANNN
+ * Opcode(s): ANNN, FX29
  * Set Index Register to nnn
  * I = addr
  * 

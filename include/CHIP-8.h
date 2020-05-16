@@ -89,6 +89,7 @@ class CHIP8 {
     void displayDump(std::ostream &);     // Dumps Display to Stream
 
     u_char getRegisterVal(u_char) const;  // Returns Register's Value at given Index
+    u_char getMemVal(u_int16_t) const;    // Returns Value at Memory Address
     u_char get_dTimer() const;            // Returns the Delay Timer Value
     u_char get_sTimer() const;            // Returns the Sound Timer Value
     u_int16_t getIndexReg() const;        // Returns the Index Register Value

@@ -88,8 +88,6 @@ void Display::Draw() {
     //  F1 = Step Through
     //  F2 = Loop Toggle
     if(isDebugMode) {
-        SDL_RenderCopy(renderer, texture, nullptr, &drawArea);              // Draw texture on Draw Area
-
         // Setup Texture for all Debug Output
         manipPixels(debugTexture, [&](uint32_t *pixels) {                   // Apply Buffer to Texture
             for (int y =0; y<debugArea.h; y++)
@@ -355,6 +353,48 @@ void Display::Draw() {
                 SDL_RenderCopy(renderer, tex, nullptr, &instrArea);
                 SDL_FreeSurface(surf);
                 SDL_DestroyTexture(tex);
+
+
+                // Restore Area Properties
+                instrArea.h = h;
+                instrArea.w = w;
+                instrArea.x = x;
+                instrArea.y = y;
+            }
+            
+
+            // Draw Values at mem[I], mem[I+1], mem[I+2]
+            {
+                // Store Prev Values (In Scope)
+                int w = instrArea.w;
+                int h = instrArea.h;
+                int x = instrArea.x;
+                int y = instrArea.y;
+
+                // Offset
+                instrArea.x += 415;
+
+                // Set Area Dimensions based on String
+                instrArea.h = 16;                  // 16px Tall
+
+
+                // Obtain and Display Memory Location Values
+                std::string str;
+                for (u_int16_t i=0; i<3; i++) {
+                    // Construct Result in a String
+                    str = "mem[I+" + std::to_string(i) + "]=" + int_to_hex(u_int16_t(cpu->getMemVal(cpu->getIndexReg() + i)));
+                    
+                    // Offset & Set Size of String
+                    instrArea.w = str.length() * 9;  // 9px Per Character
+                    instrArea.y += 16;
+
+                    // Draw & Render
+                    SDL_Surface *surf = TTF_RenderText_Solid(font, str.c_str(), {255, 255, 255, 255});
+                    SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
+                    SDL_RenderCopy(renderer, tex, nullptr, &instrArea);
+                    SDL_FreeSurface(surf);
+                    SDL_DestroyTexture(tex);
+                }
 
 
                 // Restore Area Properties
