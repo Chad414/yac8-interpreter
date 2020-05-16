@@ -117,28 +117,6 @@ void Display::Draw() {
             int y = debugArea.y;
 
 
-            // Draw Title
-            {
-                // Offset
-                debugArea.x += 8;
-                debugArea.w = 148;
-                debugArea.h = 16;
-
-                // Draw
-                SDL_Surface *surf = TTF_RenderText_Solid(font, "F1 (Step)  |  F2 (Loop)", {111, 111, 111, 255});
-                SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
-                SDL_RenderCopy(renderer, tex, nullptr, &debugArea);
-                // Free Memory
-                SDL_FreeSurface(surf);
-                SDL_DestroyTexture(tex);
-
-                // Restore Values
-                debugArea.x = x;
-                debugArea.w = w;
-                debugArea.h = h;
-            }
-
-
             // Draw Registers
             {
                 // Offset
@@ -380,9 +358,10 @@ void Display::Draw() {
 
                 // Obtain and Display Memory Location Values
                 std::string str;
-                for (u_int16_t i=0; i<3; i++) {
+                for (u_int16_t i=0; i<11; i++) {
                     // Construct Result in a String
-                    str = "mem[I+" + std::to_string(i) + "]=" + int_to_hex(u_int16_t(cpu->getMemVal(cpu->getIndexReg() + i)));
+                    //  align for OCD :)
+                    str = "mem[I+" + std::to_string(i) + (i < 10 ? " " : "") + "]=" + int_to_hex(u_int16_t(cpu->getMemVal(cpu->getIndexReg() + i)));
                     
                     // Offset & Set Size of String
                     instrArea.w = str.length() * 9;  // 9px Per Character
@@ -534,9 +513,16 @@ void Display::onKey(SDL_KeyboardEvent &key) {
 
         // Debug Keys
         if(isDebugMode) {
-            if(key.state != SDL_RELEASED) {
-                if(key.keysym.sym == SDLK_F1)       isStep = true;      // Switch Step On
-                else if(key.keysym.sym == SDLK_F2)  isLoop = !isLoop;   // Toggle Loop
+            if (key.state != SDL_RELEASED) {
+                if (key.keysym.sym == SDLK_F1) // Switch Step On
+                    isStep = true;
+                else if (key.keysym.sym == SDLK_F2) // Toggle Loop
+                    isLoop = !isLoop;
+                else if (key.keysym.sym == SDLK_F3) { // Dump Memory to file called memory.dump
+                    std::ofstream dumpFile("memory.dump", std::ios::out);
+                    cpu->memDump(dumpFile);
+                    dumpFile.close();
+                }
             }
         }
     }

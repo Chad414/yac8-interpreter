@@ -203,7 +203,7 @@ u_char CHIP8::getRegisterVal(u_char index) const {
  * @param addr - The Address in Memory
  */
 u_char CHIP8::getMemVal(u_int16_t addr) const {
-    if (addr <= 0xFFF && addr >= 0x000) // Make sure within Bounds
+    if (addr < 0xFFF && addr >= 0x000) // Make sure within Bounds
         return memory[addr];
     else
         return 0x00;
@@ -585,7 +585,11 @@ void CHIP8::JP(u_int16_t addr) {
  */
 void CHIP8::CALL(u_int16_t addr) {
     stack.push(PC);  // Push current PC to stack
-    PC = addr;       // Set PC to NNN
+
+    // Set PC to NNN - 0x02
+    //  reason is because after CALL, PC+=0x02
+    //  until next Instruction is reached
+    PC = addr - 0x2;
 }
 
 /**
@@ -882,6 +886,6 @@ void CHIP8::LD(u_int16_t* I, u_char regX) {
  */
 void CHIP8::LD(u_char regX, u_int16_t* I) {
     for (u_char i = 0x0; i < regX - 1; i++) {
-        V[i] = memory[*(I + i)];
+        V[i] = memory[*I + i];
     }
 }

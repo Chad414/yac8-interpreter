@@ -33,6 +33,13 @@ int main(int argc, char **argv) {
         } else if (arg == "-d") {
             isDisassemble = true;       // Disassemble and Output
         } else if (arg == "--debug") {  // Debug Mode
+            // Output Information about Keybinds
+            std::cout << "Debug Mode Keybinds:\n"
+                      << "\t - [F1]=Step Through Instructions\n"
+                      << "\t - [F2]=Toggle Running Through Instructions\n"
+                      << "\t - [F3]=Prompt a Memory Dump to 'memory.dump'\n";
+
+            // Enable Debugging
             isDebug = true;
         }
 
