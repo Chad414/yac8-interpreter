@@ -152,7 +152,7 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
                     break;
                 case 0x4:  // Set reg[x] += reg[y]
                     out << "ADD V" << short(opcode & 0x0F);
-                    out << ", V" << short(param & 0xF0);
+                    out << ", V" << short((param & 0xF0) >> 4);
                     break;
                 case 0x5:  // Set reg[x] -= reg[y]
                     out << "SUB V" << short(opcode & 0x0F);

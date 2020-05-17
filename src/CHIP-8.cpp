@@ -368,8 +368,8 @@ void CHIP8::run(bool isSequential) {
                 break;
             case 0x4:  // Set reg[x] += reg[y]
                 if (out) *out << "ADD V" << ((opcode & 0xF00) >> 8);
-                if (out) *out << ", V" << (opcode & 0xF0);
-                ADD(&V[(opcode & 0xF00) >> 8], V[opcode & 0xFF], true);
+                if (out) *out << ", V" << ((opcode & 0xF0) >> 4);
+                ADD(&V[(opcode & 0xF00) >> 8], V[(opcode & 0xFF) >> 4], true);
                 break;
             case 0x5:  // Set reg[x] -= reg[y]
                 if (out) *out << "SUB V" << ((opcode & 0xF00) >> 8);
@@ -833,7 +833,7 @@ void CHIP8::SKP(u_char keyVal) {
  * @param keyVal - Key Value to listen
  */
 void CHIP8::SKNP(u_char keyVal) {
-    if (key[keyVal])
+    if (!key[keyVal])
         PC += 0x2;
 }
 
@@ -871,8 +871,8 @@ void CHIP8::LD(u_char byte) {
  * @param regX - Vx Register
  */
 void CHIP8::LD(u_int16_t* I, u_char regX) {
-    for (u_char i = 0x0; i < regX - 1; i++) {
-        memory[*(I + i)] = V[i];
+    for (u_char i = 0x0; i <= regX; i++) {
+        memory[*I + i] = V[i];
     }
 }
 
@@ -885,7 +885,7 @@ void CHIP8::LD(u_int16_t* I, u_char regX) {
  * @param regX - Vx Register
  */
 void CHIP8::LD(u_char regX, u_int16_t* I) {
-    for (u_char i = 0x0; i < regX - 1; i++) {
+    for (u_char i = 0x0; i <= regX; i++) {
         V[i] = memory[*I + i];
     }
 }

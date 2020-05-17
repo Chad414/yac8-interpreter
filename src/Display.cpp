@@ -277,7 +277,7 @@ void Display::Draw() {
                 instrArea.y += 16;
 
                 // Assign Index Register
-                str = "I = " + int_to_hex(cpu->getIndexReg());
+                str = "I  = " + int_to_hex(cpu->getIndexReg());
 
                 // Set Area Dimensions based on String
                 instrArea.h = 16;                  // 16px Tall
@@ -297,7 +297,7 @@ void Display::Draw() {
                 instrArea.y += 16;
 
                 // Assign Delay Timer
-                str = "DT = " + int_to_hex(cpu->get_dTimer());
+                str = "DT = " + int_to_hex(u_int16_t(cpu->get_dTimer()));
 
                 // Set Area Dimensions based on String
                 instrArea.h = 16;                  // 16px Tall
@@ -317,7 +317,7 @@ void Display::Draw() {
                 instrArea.y += 16;
 
                 // Assign Sound Timer
-                str = "ST = " + int_to_hex(cpu->get_sTimer());
+                str = "ST = " + int_to_hex(u_int16_t(cpu->get_sTimer()));
 
                 // Set Area Dimensions based on String
                 instrArea.h = 16;                  // 16px Tall
