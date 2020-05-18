@@ -1,7 +1,8 @@
 # To-Do List
 
-- [ ] Transition to SDL
-  - [ ] Fix FPS Limit ❗❗❗
+- [ ] Add Audio
+- [x] Transition to SDL
+  - [x] Fix FPS Limit ❗❗❗
     - Look into the Logic and not an Example
   - [x] Translate Inputs
   - [x] Draw Buffer
@@ -9,9 +10,9 @@
   - [x] Make sure Win10 Works
   - [x] Clean up from GLFW
 - [x] Fix Memory Leak!
-- [ ] Implement Timers
-  - [ ] Make sure they Decrement :)
-- [ ] Debug Mode 👾
+- [x] Implement Timers
+  - [x] Make sure they Decrement :)
+- [x] Debug Mode 👾
   - [x] Display Registers and their Values
   - [x] Visual for observing Interpreter going through ASM Code as the interpreter is running
     - [x] Terminal Version

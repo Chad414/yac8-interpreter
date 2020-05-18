@@ -3,6 +3,7 @@
 
 #define DISPLAY_KEY_DEBUG 0   // On Keypress Console Verbose
 #define DISPLAY_DEBUG_MODE 1  // Debug Mode Enable (F1 Key Outputs)
+#define DRAW_RATE 4           // Rate at which Draw is called
 
 #include <spdlog/spdlog.h>
 

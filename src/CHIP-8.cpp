@@ -346,25 +346,25 @@ void CHIP8::run(bool isSequential) {
             case 0x0:                // Set reg[x] = reg[y]
                 if (out) *out << "LD V" << ((opcode & 0xF00) >> 8);
                 if (out) *out << ", V" << ((opcode & 0xF0) >> 4);
-                LD(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
+                LD(&V[(opcode & 0xF00) >> 8], V[(opcode & 0xF0) >> 4]);
                 break;
             case 0x1:  // Set reg[x] |= reg[y]
                 if (out) *out << "OR V" << ((opcode & 0xF00) >> 8);
                 if (out) *out << ", V" << ((opcode & 0xF0) >> 4);
 
-                OR(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
+                OR(&V[(opcode & 0xF00) >> 8], V[(opcode & 0xF0) >> 4]);
                 break;
             case 0x2:  // Set reg[x] &= reg[y]
                 if (out) *out << "AND V" << ((opcode & 0xF00) >> 8);
                 if (out) *out << ", V" << ((opcode & 0xF0) >> 4);
 
-                AND(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
+                AND(&V[(opcode & 0xF00) >> 8], V[(opcode & 0xF0) >> 4]);
                 break;
             case 0x3:  // Set reg[x] ^= reg[y]
                 if (out) *out << "XOR V" << ((opcode & 0xF00) >> 8);
                 if (out) *out << ", V" << ((opcode & 0xF0) >> 4);
 
-                XOR(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
+                XOR(&V[(opcode & 0xF00) >> 8], V[(opcode & 0xF0) >> 4]);
                 break;
             case 0x4:  // Set reg[x] += reg[y]
                 if (out) *out << "ADD V" << ((opcode & 0xF00) >> 8);
@@ -374,23 +374,23 @@ void CHIP8::run(bool isSequential) {
             case 0x5:  // Set reg[x] -= reg[y]
                 if (out) *out << "SUB V" << ((opcode & 0xF00) >> 8);
                 if (out) *out << ", V" << ((opcode & 0xF0) >> 4);
-                SUB(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
+                SUB(&V[(opcode & 0xF00) >> 8], V[(opcode & 0xF0) >> 4]);
                 break;
             case 0x6:  // Shift reg[x] >>= 1
                 if (out) *out << "SHR V" << ((opcode & 0xF00) >> 8);
 
-                SHR(&V[(opcode & 0xF00) >> 8], &V[opcode & 0xF0]);
+                SHR(&V[(opcode & 0xF00) >> 8], &V[(opcode & 0xF0) >> 4]);
                 break;
 
             case 0x7:  // Set reg[x] = reg[y] - reg[x]
                 if (out) *out << "SUBN V" << ((opcode & 0xF00) >> 8);
                 if (out) *out << ", V" << ((opcode & 0xF0) >> 4);
-                SUBN(&V[(opcode & 0xF00) >> 8], V[opcode & 0xF0]);
+                SUBN(&V[(opcode & 0xF00) >> 8], V[(opcode & 0xF0) >> 4]);
                 break;
 
             case 0xE:  // Shift regx[] <<= 1
                 if (out) *out << "SHL V" << ((opcode & 0xF00) >> 8);
-                SHL(&V[(opcode & 0xF00) >> 8], &V[opcode & 0xF0]);
+                SHL(&V[(opcode & 0xF00) >> 8], &V[(opcode & 0xF0) >> 4]);
                 break;
 
             default:
