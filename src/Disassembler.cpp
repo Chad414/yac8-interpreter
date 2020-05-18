@@ -136,19 +136,19 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
                 switch (param & 0x0F) {  // Operation Type
                 case 0x0:                // Set reg[x] = reg[y]
                     out << "LD V" << short(opcode & 0x0F);
-                    out << ", V" << short(param & 0xF0);
+                    out << ", V" << short((param & 0xF0) >> 4);
                     break;
                 case 0x1:  // Set reg[x] |= reg[y]
                     out << "OR V" << short(opcode & 0x0F);
-                    out << ", V" << short(param & 0xF0);
+                    out << ", V" << short((param & 0xF0) >> 4);
                     break;
                 case 0x2:  // Set reg[x] &= reg[y]
                     out << "AND V" << short(opcode & 0x0F);
-                    out << ", V" << short(param & 0xF0);
+                    out << ", V" << short((param & 0xF0) >> 4);
                     break;
                 case 0x3:  // Set reg[x] ^= reg[y]
                     out << "XOR V" << short(opcode & 0x0F);
-                    out << ", V" << short(param & 0xF0);
+                    out << ", V" << short((param & 0xF0) >> 4);
                     break;
                 case 0x4:  // Set reg[x] += reg[y]
                     out << "ADD V" << short(opcode & 0x0F);
@@ -156,7 +156,7 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
                     break;
                 case 0x5:  // Set reg[x] -= reg[y]
                     out << "SUB V" << short(opcode & 0x0F);
-                    out << ", V" << short(param & 0xF0);
+                    out << ", V" << short((param & 0xF0) >> 4);
                     break;
                 case 0x6:  // Shift reg[x] >>= 1
                     out << "SHR V" << short(opcode & 0x0F);
@@ -164,7 +164,7 @@ void Disassembler::disassemble(char *filePath, std::ostream &out) {
 
                 case 0x7:  // Set reg[x] = reg[y] - reg[x]
                     out << "SUBN V" << short(opcode & 0x0F);
-                    out << ", V" << short(param & 0xF0);
+                    out << ", V" << short((param & 0xF0) >> 4);
                     break;
 
                 case 0xE:  // Shift regx[] <<= 1
