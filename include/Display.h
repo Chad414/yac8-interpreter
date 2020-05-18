@@ -3,7 +3,7 @@
 
 #define DISPLAY_KEY_DEBUG 0   // On Keypress Console Verbose
 #define DISPLAY_DEBUG_MODE 1  // Debug Mode Enable (F1 Key Outputs)
-#define DRAW_RATE 4           // Rate at which Draw is called
+#define DRAW_RATE 4           // Rate at which Draw is called (Default)
 
 #include <spdlog/spdlog.h>
 
@@ -24,8 +24,10 @@ class Display : SimpleRender {
     std::deque<std::string> instructionWindow; // Window of Previous N Instructions
     u_char *debugBuffer;                       // Debug Buffer Screen Area (Used for Borders)
     SDL_Texture *debugTexture;                 // Texture to use on Debug Area
-
     SDL_Rect debugArea, instrArea, drawArea;   // Split up Draw and Debug Areas
+
+  private:    // Private Variables
+    int drawRate;                              // Speed at which CHIP8 will Run (Multiplier)
 
   private:
     CHIP8 *cpu;
@@ -62,7 +64,8 @@ class Display : SimpleRender {
     Display(CHIP8 *, u_int8_t upscale);
     ~Display();
 
-    void enableDebugMode();  // Enables Debug Mode
+    void enableDebugMode(); // Enables Debug Mode
+    void setDrawRate(int);  // Sets the Draw Rate
     void run();
 };
 

@@ -46,7 +46,6 @@ std::string int_to_hex(T i) {
 /* SimpleRender Section */
 
 
-
 void Display::Draw() {
     // Keep Track of Last Draw
     static u_int32_t startTime = SDL_GetTicks();
@@ -56,7 +55,7 @@ void Display::Draw() {
     SDL_SetWindowTitle(window, titleBuffer);
 
     // Draw at Specified Rate
-    for (int _spdCount = 0; _spdCount < DRAW_RATE; _spdCount++) {
+    for (int _spdCount = 0; _spdCount < drawRate; _spdCount++) {
         // Redraw ONLY if Draw Flag Flipped
         if(cpu->drawFlag) {
             // Preconfigure Rendering & Texture
@@ -405,10 +404,10 @@ void Display::Draw() {
         // Slow Down Draw (60FPS)
         u_int32_t dTime = SDL_GetTicks() - startTime;       // Get the time it took to go through Draw
 
-        if(dTime < (1000/60/DRAW_RATE)) {                             // Limit to 60FPS
-            std::this_thread::sleep_for(std::chrono::milliseconds( u_int64_t((1000 / 60 / DRAW_RATE) ) - dTime) );
+        if(dTime < (1000/60/drawRate)) {                             // Limit to 60FPS
+            std::this_thread::sleep_for(std::chrono::milliseconds( u_int64_t((1000 / 60 / drawRate) ) - dTime) );
         }else {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000 / 60 / drawRate));
         }
 
         startTime = SDL_GetTicks();
@@ -541,6 +540,7 @@ Display::Display(CHIP8 *chip8, u_int8_t upscale) : SimpleRender(upscale, "YAC8")
     // Initial Values
     isLoop = true;
     isStep = false;
+    drawRate = DRAW_RATE;
 }
 
 /**
@@ -568,9 +568,26 @@ void Display::run() {
 
 
 /**
+ * Sets the Draw Rate
+ *  Value must be greater than 0
+ *  If not Valid, Default Draw Rate is Applied
+ * @param rate - Draw Speed Multiplier
+ */
+void Display::setDrawRate(int rate) {
+    if (rate > 0)
+        drawRate = rate;
+    else
+        drawRate = DRAW_RATE;   // Default Draw Rate
+}
+
+/**
  * Enables Debug Mode
  */
 void Display::enableDebugMode() {
     this->isDebugMode = true;       // Setup Debug Mode
     this->isLoop = false;           // No Loop
+
+    // Optimize Debug: Draw Speed Multiplier
+    //  overrides User Defined
+    drawRate = 1;
 }
