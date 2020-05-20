@@ -23,13 +23,17 @@ yac8_interpreter ./path/to/rom ./path/to/asm/output/file -d
 ```
 
 ## YAC8 Screenshots
-Screenshot of Breakout ROM
+
+Breakout ROM\
 ![alt text][yac8-img1]
-Screenshot of IBM ROM
+
+IBM ROM\
 ![alt text][yac8-img2]
-Screenshot of Space Invaders ROM
+
+Space Invaders ROM\
 ![alt text][yac8-img3]
-Screenshot of Space Invaders ROM in Debug Mode
+
+Space Invaders ROM in Debug Mode\
 ![alt text][yac8-img4]
 
 ## License
