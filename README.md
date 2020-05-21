@@ -22,6 +22,28 @@ yac8_interpreter ./path/to/rom
 yac8_interpreter ./path/to/rom ./path/to/asm/output/file -d
 ```
 
+## Keyboard Inputs
+The CHIP8 uses a Hex Keyboard (0x0 - 0xF), which is mapped as shown below
+
+```
+SPACE   ->  0x0
+Z       ->  0x1
+UP      ->  0x2
+X       ->  0x3
+LEFT    ->  0x4
+C       ->  0x5
+RIGHT   ->  0x6
+V       ->  0x7
+DOWN    ->  0x8
+LSHIFT  ->  0x9
+A       ->  0xA
+S       ->  0xB
+D       ->  0xC
+F       ->  0xD
+Q       ->  0xE
+W       ->  0xF
+```
+
 ## YAC8 Screenshots
 Screenshot of Breakout ROM
 ![alt text][yac8-img1]

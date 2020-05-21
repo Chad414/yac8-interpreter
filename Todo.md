@@ -20,7 +20,7 @@
   - [x] Be able to RUN or Run on Click (On Line at a time)
 - [ ] Configuration 🎮
   - [ ] Keymap Remap
-  - [ ] Window Size
+  - [x] Window Size
 
 
 - [x] Layout CHIP-8 "Hardware" Structure + Comments
